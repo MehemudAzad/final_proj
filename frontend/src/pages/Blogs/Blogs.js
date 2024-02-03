@@ -36,9 +36,7 @@ const Blogs = () =>{
     </div>
     <div className='grid grid-cols-2 bg-white w-[86%] m-auto'>
     {
-        blogs.map(course => 
-            <Blog key={course.course_id} course = {course}/>
-        )
+        blogs.map(blog => <Blog key={blog.blog_id} blog={blog.blog_content}></Blog>)
     }
     </div>
     </>

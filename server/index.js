@@ -8,7 +8,6 @@ const port = process.env.PORT || 5002;
 
 require('dotenv').config();
 const app = express();
-
 //middleware
 app.use(cors());
 app.use(express.json());
@@ -159,6 +158,8 @@ app.post('/login', async (req, res) => {
       [email, password]
     );
 
+    console.log(email + ' ' + password);
+
     //get the user role
     const role = user?.rows[0]?.role;
     console.log(role);
@@ -176,6 +177,7 @@ app.post('/login', async (req, res) => {
           console.log(studentUser)
           res.json({ success: true, message: 'Authentication successful', user:studentUser });
         } else {
+          console.log(result.rows.length);
           res.status(401).json({ success: false, message: 'Invalid email or password' });
         }
     }else {
@@ -204,16 +206,21 @@ app.post('/login', async (req, res) => {
 
 
     //courses for a particular student
-    app.get('/student-courses/:studentId', async (req, res) => {
-      const studentId = req.params.studentId;
+    app.get('/student-courses/:userId', async (req, res) => {
+      const userId = req.params.userId;
     
       try {
         const result = await pool.query(
-          'SELECT courses.* FROM courses ' +
-          'JOIN course_student ON courses.course_id = course_student.course_id ' +
-          'WHERE course_student.user_id = $1',
-          [studentId]
-        );
+          `SELECT CC.*
+          FROM COURSES CC
+          JOIN COURSE_STUDENT CS ON CC.COURSE_ID = CS.COURSE_ID
+          WHERE CS.STUDENT_ID = (
+            SELECT S.STUDENT_ID 
+            FROM STUDENTS S
+            WHERE S.USER_ID = $1
+         rId]
+        ); )`,
+          [use
     
         const courses = result.rows;
     
@@ -229,12 +236,12 @@ app.post('/login', async (req, res) => {
     *************************/
     app.post('/enroll', async (req, res) => {
       try {
-        const { course_id, user_id } = req.body;
+        const { course_id, student_id } = req.body;
     
         // Insert into course_student table
         const enrollmentResult = await pool.query(
-          'INSERT INTO course_student (course_id, user_id) VALUES ($1, $2) RETURNING *',
-          [course_id, user_id]
+          'INSERT INTO course_student (course_id, student_id) VALUES ($1, $2) RETURNING *',
+          [course_id, student_id]
         );
     
         res.json(enrollmentResult.rows[0]);
@@ -298,7 +305,11 @@ app.post('/login', async (req, res) => {
             const query = `
               SELECT users.*
               FROM users
-              JOIN course_teacher ON users.id = course_teacher.user_id
+              JOIN course_teacher ON users.id = (
+                SELECT T.user_id 
+                FROM TEACHERS T
+                WHERE T.TEACHER_ID = course_teacher.TEACHER_ID
+              )
               WHERE course_teacher.course_id = $1;
             `;
 
@@ -619,6 +630,15 @@ app.post('/comments', async (req, res) => {
           } catch (err) {
             console.error(err.message);
             // res.status(500).json({ message: 'Internal server error' });
+          }
+        });
+
+        app.get("/blogs", async (req, res) => {
+          try {
+            const allBlogs = await pool.query("SELECT * FROM blogs");
+            res.json(allBlogs.rows);
+          } catch (err) {
+            console.error(err.message);
           }
         });
  
