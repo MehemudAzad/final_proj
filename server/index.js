@@ -4,7 +4,7 @@ const pool = require('./db');
 const bcrypt = require('bcrypt');
 
 const port = process.env.PORT || 5002;
-// const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 
 require('dotenv').config();
 const app = express();
@@ -13,9 +13,36 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// //verifying jwt token 
+function verifyJWT(req, res, next){
+    // next()
+    const authHeader = req.headers.authorization;
+    if(!authHeader){
+        // res.send({message: 'unauthorized access'})
+        res.status(401).send({message: 'unauthorized access'})
+    }
+    const token = authHeader.split(' ')[1];
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function(err ,decoded){
+        if(err){
+            res.status(401).send({message: 'forbidden access'})
+        }
+        req.decoded = decoded;
+        next();
+    })
+}
+
  
 async function run(){
     try{
+        app.post('/jwt', (req, res) =>{
+          const user = req.body;
+          console.log(user);
+          const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '5h'})
+          res.send({token})
+
+          //sending the token as an objext the property is token and the value is also token
+          // res.send({token});
+      })
         //get all users
         app.get("/users", async (req, res) => {
           try {
@@ -136,18 +163,6 @@ async function run(){
           }
         });
 
-
-        // // Check if the user with the provided email and password exists
-        // const user = await pool.query(
-        //   'SELECT * FROM users WHERE users.email = $1 AND users.password = $2',
-        //   [email, password]
-        // );        
-        
-    //   } catch (error) {
-    //     console.error('Error during login:', error);
-    //     res.status(500).json({ success: false, message: 'Internal server error' });
-    //   }
-    // });
 
 // Login API endpoint
 app.post('/login', async (req, res) => {

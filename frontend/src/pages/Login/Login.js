@@ -18,8 +18,6 @@ const Login = () => {
         const email= form.email.value;
         console.log(email, password);
         console.log('before login');
-
-
         fetch('http://localhost:5002/login', {
             method: 'POST',
             headers:{
@@ -31,8 +29,23 @@ const Login = () => {
         .then(data => {
             console.log(data.user)
             setUser(data.user);
-            localStorage.setItem('user', data.user);
+            localStorage.setItem('user', JSON.stringify(data.user));
         })
+
+        //get jwt token
+        fetch('https://assignment-11-server-topaz.vercel.app/jwt', {
+            method: 'POST',
+            headers:{
+                'content-type': 'application/json'
+            },
+            body:JSON.stringify(user)
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log(data)
+            localStorage.setItem('hikaru-token', data.token);
+        })
+
         // Navigate()
         navigate(from, {replace: true});
     }

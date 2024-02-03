@@ -44,7 +44,7 @@ const Header = () => {
             </label>
             </div>
             <ul tabIndex={0} className="mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-52 z-10">
-                <li><Link to={`/profile/${user?.id}`}>Settings</Link></li>
+                <li><Link to={`/profile/${user?.id}`}>Profile</Link></li>
                 <li>
                   {
                     user?.role === "student" ? <Link to="/student/dashboard">Dashboard</Link>
@@ -74,12 +74,14 @@ const Header = () => {
           <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1 bg-green-200" id="navbar-user">
             <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg  md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 bg-green-200">
               <li>
-              <Link to="/" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"> {
+                  {
                     user?.role === "student" ? <Link to="/student/dashboard"> Dashboard</Link>
-                    :
-                    <Link to="/teacher/dashboard">Dashboard</Link>
-                  } </Link>
-
+                    :<> </>
+                  }
+                  {
+                    user?.role === "teacher" ? <Link to="/teacher/dashboard"> Dashboard</Link>
+                    :<> </>
+                  }
               </li>
               <li>
               <Link to="/" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Home</Link>

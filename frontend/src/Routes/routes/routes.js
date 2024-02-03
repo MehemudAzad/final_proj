@@ -5,8 +5,6 @@ import Register from "../../pages/Login/Register";
 import ErrorPage from "../../pages/ErrorPage";
 import Login from "../../pages/Login/Login";
 import Home from "../../pages/Home/Home";
-import Courses from "../../pages/Courses/Courses";
-import Blogs from "../../pages/Blogs/Blogs";
 import SingleCourse from "../../pages/Courses/SingleCourse";
 import About from "../../pages/About/About";
 import AddCourses from "../../pages/CourseTeacher/AddCourses";
@@ -21,7 +19,6 @@ import TeacherDashboard from "../../pages/Teacher/TeacherDashboard";
 import CourseMain from "../../shared/CourseMain/CourseMain";
 import LessonPage from "../../shared/CourseMain/LessonPage";
 import LessonsLayout from "../../layout/LessonsLayout";
-import LectureVideo from "../../shared/CourseMain/LecturePage/LectureVideo";
 import LecturesPage from "../../shared/CourseMain/LecturePage/LecturesPage";
 
 
