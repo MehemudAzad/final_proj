@@ -2,9 +2,10 @@ import { useContext, useEffect, useState } from "react";
 import courseFinder from "../../apis/courseFinder";
 import { AuthContext } from "../../context/AuthProvider";
 import Course from "../Courses/Course";
-import CourseMain from "../../shared/CourseMain/CourseMain";
+import CourseMain from "../../shared/CourseMain/CoursePage/CourseMain";
 import CourseTeacherCard from "../CourseTeacher/CourseTeacherCard";
 import AddCourses from "../CourseTeacher/AddCourses";
+import Outline from "../../shared/CourseMain/CoursePage/Outline";
 
 const TeacherDashboard = () => {
     //load the course using course_teacher table
@@ -41,7 +42,7 @@ const TeacherDashboard = () => {
                 <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
                     <section>
                     <h2 className="text-3xl">My courses </h2>
-                    <div>
+                    <div className="w-[75%]">
                         {
                             coursesTeacher.map(course => 
                                 <CourseTeacherCard key = {course.course_id} course = {course} />
@@ -58,7 +59,9 @@ const TeacherDashboard = () => {
                 </div>
 
                 <input type="radio" name="my_tabs_2" role="tab" className="tab text-2xl [--tab-bg:bg-blue-200] [--tab-border-color:blue-200]" aria-label="Earnings" />
-                <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">Tab content 3</div>
+                <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
+                
+                </div>
             </div>
             
         </div>

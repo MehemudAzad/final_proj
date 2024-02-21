@@ -28,8 +28,8 @@ const CourseTeacherCard = ({course}) => {
     };
     return ( 
         <div>
-            <div className="w-[70%] my-8">
-            <div className="card card-side bg-base-100 shadow-xl p-6">
+            <div className="my-8">
+            <div className="card card-side bg-indigo-50 shadow-xl p-6">
             <figure className="rounded-lg"><img className="w-[450px] h-[300px]" src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=3271&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Movie"/></figure>
             <div className="card-body">
                 <h2 className="text-4xl">{course_name}</h2>

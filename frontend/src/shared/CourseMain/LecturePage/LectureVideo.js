@@ -7,7 +7,7 @@ const LectureVideo = ({lecture}) => {
     // console.log(lecture);
     const {lecture_id, pdf_note, video_link} = lecture;
     return (
-        <div>
+        <div className=''>
             {/* this is video section */}
             <div>
             <h2 className='text-3xl mb-4'>{pdf_note}</h2>

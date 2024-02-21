@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { AuthContext } from "../context/AuthProvider";
 import { Link, Outlet, useLoaderData } from "react-router-dom";
 import Header from "../shared/Header/Header";
-import LectureCard from "../shared/CourseMain/LectureCard";
+import LectureCard from "../shared/CourseMain/Lecture/LectureCard";
 
 const LessonsLayout = () => {
     const {user} = useContext(AuthContext);
@@ -14,7 +14,7 @@ const LessonsLayout = () => {
         <Header></Header>
           <div className="drawer lg:drawer-open">
             <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
-            <div className="drawer-content flex flex-col p-8">
+            <div className="drawer-content flex flex-col">
                 {/* Page content here */}
                 {/* <LectureVideo></LectureVideo>
                 <div>lecture video </div>

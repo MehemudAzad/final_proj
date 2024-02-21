@@ -1,28 +1,27 @@
 import { createBrowserRouter } from "react-router-dom";
 
 import Main from "../../layout/Main";
-import Register from "../../pages/Login/Register";
+import Register from "../../pages/Auth/Register";
 import ErrorPage from "../../pages/ErrorPage";
-import Login from "../../pages/Login/Login";
+import Login from "../../pages/Auth/Login";
 import Home from "../../pages/Home/Home";
-import Courses from "../../pages/Courses/Courses";
-import Blogs from "../../pages/Blogs/Blogs";
 import SingleCourse from "../../pages/Courses/SingleCourse";
 import About from "../../pages/About/About";
 import AddCourses from "../../pages/CourseTeacher/AddCourses";
 import Profile from "../../pages/Student/Profile";
 import LoginLayout from "../../layout/LoginLayout";
-import TeacherLogin from "../../pages/Login/TeacherLogin";
-import TeacherRegister from "../../pages/Login/TeacherRegister";
+import TeacherLogin from "../../pages/Auth/TeacherLogin";
+import TeacherRegister from "../../pages/Auth/TeacherRegister";
 import CorusePage from "../../pages/Courses/CoursePage";
 import BlogsPage from "../../pages/Blogs/BlogsPage";
 import StudentDashboard from "../../pages/Student/StudentDashboard";
 import TeacherDashboard from "../../pages/Teacher/TeacherDashboard";
-import CourseMain from "../../shared/CourseMain/CourseMain";
-import LessonPage from "../../shared/CourseMain/LessonPage";
+import CourseMain from "../../shared/CourseMain/CoursePage/CourseMain";
+import LessonPage from "../../shared/CourseMain/Lessons/LessonPage";
 import LessonsLayout from "../../layout/LessonsLayout";
-import LectureVideo from "../../shared/CourseMain/LecturePage/LectureVideo";
 import LecturesPage from "../../shared/CourseMain/LecturePage/LecturesPage";
+import TeacherProfile from "../../pages/Teacher/TeacherProfile";
+import SingleBlog from "../../pages/Blogs/SingleBlog";
 
 
 export const routes = createBrowserRouter([
@@ -37,6 +36,11 @@ export const routes = createBrowserRouter([
             {
                 path: '/blogs',
                 element:<BlogsPage></BlogsPage>
+            },
+            {
+                path: '/blogs/:blog_id',
+                element:<SingleBlog></SingleBlog>,
+                loader: ({params})=> fetch(`http://localhost:5002/blogs/${params.blog_id}`)
             },
             {
                 path: '/about',
@@ -69,9 +73,14 @@ export const routes = createBrowserRouter([
                 loader:({params})=> fetch(`http://localhost:5002/courses/${params.id}`)
             },
             {
-                path:'profile/:id',
+                path:'student/profile/:id',
                 element:<Profile></Profile>,
                 loader:({params})=> fetch(`http://localhost:5002/user/${params.id}`)
+            },
+            {
+                path:'teacher/profile/:teacher_id',
+                element:<TeacherProfile></TeacherProfile>,
+                loader:({params})=> fetch(`http://localhost:5002/user/teacher/${params.teacher_id}`)
             },
            
             {
@@ -111,7 +120,7 @@ export const routes = createBrowserRouter([
             {
                 path: '/lessons/:id',
                 element: <LessonPage></LessonPage>,
-                // loader:({params})=> fetch(`http://localhost:5002/lecture/${params.id}`)
+                loader:({params})=> fetch(`http://localhost:5002/lessons/${params.id}`)
             },
             {
                 path: '/lessons/:id/lecture/:lecture_id',

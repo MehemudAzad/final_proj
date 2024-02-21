@@ -58,7 +58,7 @@ const Courses = () =>{
                 console.error('Error fetching courses:', error);
             }
         };
-
+        console.log("hello")
         fetchCourses();
         // setCoursesCnt(courses.length)
     }, [page]);
