@@ -53,6 +53,7 @@ const Header = () => {
                 </li>
                 <li>
                   {
+                    user?.role === "admin" ? <Link to="/admin/dashboard">Admin </Link> :
                     user?.role === "student" ? <Link to="/student/dashboard">Dashboard</Link>
                     :
                     <Link to="/teacher/dashboard">Dashboard</Link>
@@ -83,6 +84,10 @@ const Header = () => {
               <li class="block py-2 px-3 text-base-100  rounded hover:bg-orange-600md:hover:bg-transparent md:hover:text-orange-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                   {
                     user?.role === "student" ? <Link to="/student/dashboard"> Dashboard</Link>
+                    :<> </>
+                  }
+                   {
+                    user?.role === "admin" ? <Link to="/admin/dashboard"> Admin Dashboard</Link>
                     :<> </>
                   }
                   {

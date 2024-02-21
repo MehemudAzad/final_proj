@@ -6,7 +6,6 @@ import ErrorPage from "../../pages/ErrorPage";
 import Login from "../../pages/Auth/Login";
 import Home from "../../pages/Home/Home";
 import SingleCourse from "../../pages/Courses/SingleCourse";
-import About from "../../pages/About/About";
 import AddCourses from "../../pages/CourseTeacher/AddCourses";
 import Profile from "../../pages/Student/Profile";
 import LoginLayout from "../../layout/LoginLayout";
@@ -22,6 +21,8 @@ import LessonsLayout from "../../layout/LessonsLayout";
 import LecturesPage from "../../shared/CourseMain/LecturePage/LecturesPage";
 import TeacherProfile from "../../pages/Teacher/TeacherProfile";
 import SingleBlog from "../../pages/Blogs/SingleBlog";
+import AddLectures from "../../pages/CourseTeacher/AddLectures";
+import AdminDashboard from "../../pages/Admin/AdminDashboard";
 
 
 export const routes = createBrowserRouter([
@@ -43,16 +44,16 @@ export const routes = createBrowserRouter([
                 loader: ({params})=> fetch(`http://localhost:5002/blogs/${params.blog_id}`)
             },
             {
-                path: '/about',
-                element:<About></About>
-            },
-            {
                 path:'/student/dashboard',
                 element:<StudentDashboard></StudentDashboard>
             },
             {
                 path:'/teacher/dashboard',
                 element:<TeacherDashboard></TeacherDashboard>
+            },
+            {
+                path:'/admin/dashboard',
+                element:<AdminDashboard/>
             },
             {
                 path:'/addcourses',
@@ -91,6 +92,11 @@ export const routes = createBrowserRouter([
                 path: '/lessons/:id',
                 element: <LessonPage></LessonPage>,
                 loader:({params})=> fetch(`http://localhost:5002/lectures/${params.id}`)
+            },
+            {
+                path: '/add-lectures/:lesson_id',
+                element:<AddLectures></AddLectures>,
+                loader: ({params})=> fetch(`http://localhost:5002/lesson/${params.lesson_id}`)
             }
         ]
     },

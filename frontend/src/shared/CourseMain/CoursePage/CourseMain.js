@@ -87,7 +87,7 @@ const CourseMain = () => {
                     <>
                         <input type="radio" name="my_tabs_1" role="tab" className="tab text-2xl px-12" aria-label="Add Lessons" />
                         <div role="tabpanel" className="tab-content p-10">
-                            <AddLessons></AddLessons>
+                            <AddLessons course={course} lessons={lessons}></AddLessons>
                         </div>
                     </>
                     :

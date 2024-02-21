@@ -8,7 +8,8 @@ const LessonsLayout = () => {
     const {user} = useContext(AuthContext);
     const lectures = useLoaderData();
     console.log(lectures, "hello")
-    
+    const lesson_id = lectures[0]?.lesson_id;
+    console.log(lesson_id);
     return ( 
         <>
         <Header></Header>
@@ -29,8 +30,19 @@ const LessonsLayout = () => {
 
                 <ul className="menu p-4 w-[450px] min-h-full bg-base-200 text-base-content">
                 {/* Sidebar content here */}
-                <div>
+                <div className="flex items-center justify-between">
                     <h2 className="text-3xl p-4">Lectures ({lectures?.length})</h2>
+                    {
+                        user?.role === 'teacher' ?
+                        <>
+                            <Link to={`/add-lectures/${lesson_id}`} ><button className="btn btn-primary mr-5">Add</button></Link>
+                        </>
+                        :
+                        <>
+
+                        </>
+                    }
+                 
                 </div>
                 <div>
                     {
