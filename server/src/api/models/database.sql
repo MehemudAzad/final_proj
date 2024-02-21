@@ -90,7 +90,7 @@ CREATE TABLE lectures (
 CREATE TABLE comment_lecture (
     comment_id SERIAL PRIMARY KEY,
     lecture_id INT REFERENCES lectures(lecture_id),
-    student_id INT REFERENCES students(student_id),
+    user_id INT REFERENCES users(id),
     description TEXT
 );
 
