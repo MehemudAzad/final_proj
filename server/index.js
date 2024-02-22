@@ -108,39 +108,47 @@ async function run(){
               'INSERT INTO students (user_id) VALUES ($1)',
               [userId]
             );
+          const result = await pool.query(//$1 = s.user_id WHERE u.id = $1',[userId]
+            'SELECT u.*, s.* FROM users u JOIN students s ON $1 = s.user_id WHERE u.id = $1',[userId]
+          );
+          const studentUser = result.rows[0];
+            res.json({ success: true, user: studentUser });
 
-            res.json({ success: true, userId });
-            res.status(201).json({ message: 'User registered successfully' });
           } catch (error) {
             console.error('Error registering user', error);
             res.status(500).send('Internal Server Error');
           }
         });
 
-        //teacher registration
-        app.post("/teacher/register", async (req, res) => {
+        // teacher registration
+        app.post("/teacher-register", async (req, res) => {
+          console.log("teacher-register")
           try {
             // Assuming you want to insert the role as 'student'
             const { email, username, password } = req.body;
 
             // Step 1: Insert into the users table
-            const newTeacher= await pool.query(
+            const newUser= await pool.query(
               "INSERT INTO users (role, email, username, password) VALUES('teacher', $1, $2, $3) RETURNING *",
               [email, username, password]
             );
-            const userId = newTeacher.rows[0].id;
+            const userId = newUser.rows[0].id;
             console.log(userId);
 
             // Step 2: If the user is a student, insert into the students table
-            await pool.query(
-              'INSERT INTO teachers (user_id) VALUES ($1)',
+            const newTeacher = await pool.query(
+              'INSERT INTO teachers (user_id) VALUES ($1) RETURNING *',
               [userId]
             );
-
-            res.json({ success: true, userId });
-            res.status(201).json({ message: 'User registered successfully' });
+          const result = await pool.query(//$1 = s.user_id WHERE u.id = $1',[userId]
+            'SELECT u.*, t.* FROM users u JOIN teachers t ON $1 = t.user_id WHERE u.id = $1',[userId]
+          );
+            // res.json({ success: true, userId });
+            // console.log(result.rows[0]);
+            // console.log(first)
+            const teacherUser = result.rows[0];
+            res.json({ success: true, user: teacherUser });
         
-            res.json(newTeacher.rows[0]);
           } catch (err) {
             console.error(err.message);
           }
