@@ -4,7 +4,7 @@ import { IoLocation } from "react-icons/io5";
 import { GiTeacher } from "react-icons/gi";
 import {useLoaderData} from 'react-router-dom';
 import AddCourses from "../CourseTeacher/AddCourses";
-import CourseTeacherCard from "../CourseTeacher/CourseTeacherCard";
+import CourseTeacherCard from "./CourseTeacherCard";
 import { BiSolidInstitution } from "react-icons/bi";
 import Settings from "./Settings";
 import { MdOutlineSystemUpdateAlt } from "react-icons/md";

@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthProvider";
 import MyCourse from "./MyCourse";
+import CourseStudentCard from "./CourseStudentCard";
 
 const StudentDashboard = () => {
     const [courses, setCourses] = useState([]);
@@ -33,16 +34,25 @@ const StudentDashboard = () => {
     //  );
      return (
         <>
-        <div className='text-5xl ml-40  md-10 text-black'>
-            All Courses of {user?.username} ( {courses.length} )
+        <div className='text-5xl ml-5  md-10 text-black'>
+            All Courses of {user?.username} ( {courses?.length} )
         </div>
-        <div className='grid grid-cols-2 bg-white w-[86%] m-auto'>
+        {/* <div className='grid grid-cols-2 bg-white w-[86%] m-auto'>
         {
             courses.map(course => 
                 <MyCourse key={course.course_id} course = {course}/>
             )
         }
-        </div>
+        </div> */}
+          <section className="p-8">
+            <div className="w-[75%]">
+                {
+                    courses?.map(course => 
+                        <CourseStudentCard key = {course.course_id} course = {course} />
+                    )
+                }
+            </div>     
+        </section>
         </>
         
       )

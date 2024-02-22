@@ -32,9 +32,9 @@ const Register = () => {
         })
         .then(res => res.json())
         .then(data => {
-            console.log(data.userInfo)
-            setUser(data.userInfo);
-            localStorage.setItem('user', JSON.stringify(data.userInfo));
+            console.log(data.user)
+            setUser(data.user);
+            localStorage.setItem('user', JSON.stringify(data.user));
         })
         navigate(from, {replace: true});
 

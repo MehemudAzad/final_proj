@@ -1,6 +1,9 @@
+import { useContext } from "react";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../../context/AuthProvider";
 
 const LessonCard = ({lesson}) => {
+    const {user} = useContext(AuthContext);
     const {course_id, lesson_description, title,  lesson_id, teacher_id, } = lesson;
     return ( 
         <>
@@ -10,7 +13,14 @@ const LessonCard = ({lesson}) => {
                         <h5 class="mb-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">{title}</h5>
                     <p class="mb-3 font-normal text-gray-700 text-md dark:text-gray-400">{lesson_description}</p>
                 </div>
-                <button className="text-5xl bg-indigo-200 hover:bg-indigo-300 rounded-full p-5 w-20 h-20">X</button>
+                {
+                    user?.role === 'teacher' ? <>
+                     <button className="text-5xl bg-indigo-200 hover:bg-indigo-300 rounded-full p-5 w-20 h-20">X</button>
+                    </>:
+                    <>
+                    </>
+                }
+               
             </div>
            
         </Link>

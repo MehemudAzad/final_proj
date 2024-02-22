@@ -4,6 +4,7 @@ import { AuthContext } from "../../../context/AuthProvider";
 import LessonCard from "../Lessons/LessonCard";
 import AddLessons from "../Lessons/AddLessons";
 import Outline from "./Outline";
+import Teachers from "./Teachers";
 
 const CourseMain = () => {
     const course = useLoaderData();
@@ -66,7 +67,6 @@ const CourseMain = () => {
             <div className="mt-8">
                 <h1 className="text-5xl mb-8">{course_name}</h1>
             </div>
-            {/* lessons  */}
             {/* 
                 add tabs here  
             */}
@@ -87,7 +87,7 @@ const CourseMain = () => {
                     <>
                         <input type="radio" name="my_tabs_1" role="tab" className="tab text-2xl px-12" aria-label="Add Lessons" />
                         <div role="tabpanel" className="tab-content p-10">
-                            <AddLessons course={course} lessons={lessons}></AddLessons>
+                            <AddLessons course={course}></AddLessons>
                         </div>
                     </>
                     :
@@ -97,8 +97,12 @@ const CourseMain = () => {
             
 
             <input type="radio" name="my_tabs_1" role="tab" className="tab text-2xl px-12" aria-label="Outline" />
-            <div role="tabpanel" className="tab-content p-10">  
-                   <Outline></Outline>
+            <div role="tabpanel" className="tab-content p-10">
+                <Outline></Outline> 
+            </div>
+            <input type="radio" name="my_tabs_1" role="tab" className="tab text-2xl px-12" aria-label="Teachers" />
+            <div role="tabpanel" className="tab-content p-10">
+                <Teachers course={course}></Teachers>
             </div>
             </div>
             

@@ -23,6 +23,7 @@ import TeacherProfile from "../../pages/Teacher/TeacherProfile";
 import SingleBlog from "../../pages/Blogs/SingleBlog";
 import AddLectures from "../../pages/CourseTeacher/AddLectures";
 import AdminDashboard from "../../pages/Admin/AdminDashboard";
+import TeacherProfileView from "../../pages/Teacher/TeacherProfileView";
 
 
 export const routes = createBrowserRouter([
@@ -83,7 +84,11 @@ export const routes = createBrowserRouter([
                 element:<TeacherProfile></TeacherProfile>,
                 loader:({params})=> fetch(`http://localhost:5002/user/teacher/${params.teacher_id}`)
             },
-           
+            {
+                path:'teacher/profile/view/:teacher_id',
+                element:<TeacherProfileView></TeacherProfileView>,
+                loader:({params})=> fetch(`http://localhost:5002/user/teacher/${params.teacher_id}`)
+            },
             {
                 path:'/teacher-register',
                 element:<TeacherRegister></TeacherRegister>
