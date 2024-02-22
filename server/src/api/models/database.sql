@@ -55,6 +55,8 @@ CREATE TABLE course_student (
     user_id INT REFERENCES users(id),
     PRIMARY KEY (course_id, user_id)
 );
+alter table course_student 
+add column is_approved varchar(100);
 
 -- Course_Teacher Table
 CREATE TABLE course_teacher (
@@ -62,9 +64,12 @@ CREATE TABLE course_teacher (
     user_id INT REFERENCES users(id),
     PRIMARY KEY (course_id, user_id)
 );
+--added new column
+alter table course_teacher
+ADD COLUMN is_approved VARCHAR(100);
 
 
--- Lesson Table
+-- Lesson Tabl
 CREATE TABLE lessons (
     lesson_id SERIAL PRIMARY KEY,
     course_id INT REFERENCES courses(course_id),
@@ -85,19 +90,17 @@ CREATE TABLE lectures (
 CREATE TABLE comment_lecture (
     comment_id SERIAL PRIMARY KEY,
     lecture_id INT REFERENCES lectures(lecture_id),
-    student_id INT REFERENCES students(student_id),
+    user_id INT REFERENCES users(id),
     description TEXT
 );
 
 -- Blogs Table
 CREATE TABLE blogs (
     blog_id SERIAL PRIMARY KEY,
-    teacher_id INT REFERENCES teachers(teacher_id),
+    user_id INT REFERENCES users(id),
     blog_content TEXT,
-    blog_title VARCHAR(255),
+    blog_title VARCHAR(500),
     blog_category VARCHAR(50),
-    read BOOLEAN,
-    reaction_count INT
 );
 
 -- Blog_Comments Table

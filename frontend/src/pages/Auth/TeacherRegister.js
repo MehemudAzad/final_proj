@@ -1,13 +1,18 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom';
-import useTitle from '../../hooks/useTitle';
+import { useContext, useState } from "react";
+import { Link, useLocation, useNavigate} from "react-router-dom";
+import { AuthContext } from "../../context/AuthProvider";
 
-const Register = () => {
-    useTitle('Register');
+const TeacherRegister = () => {
+    const {user, setUser} = useContext(AuthContext);
     const [error, setError] = useState('');
     const [errorPass, setErrorPass] = useState('');
     const [errorFirebase, setErrorFirebase] = useState('');
     const [errorPassConfirm, setErrorPassConfirm] = useState('');
+
+    const navigate = useNavigate();
+    const location = useLocation();
+    // .state?.from?
+    const from = location.state?.from?.pathname || '/';
 
     const handleSubmit = event=>{
         event.preventDefault(); 
@@ -15,10 +20,9 @@ const Register = () => {
         const username = form.name.value;
         const email = form.email.value;
         const password = form.password.value;
-        console.log("helo")
-        console.log(username, email, password);
+        // console.log(username, email, password);
 
-        fetch('http://localhost:5002/register', {
+        fetch('http://localhost:5002/teacher-register', {
             method: 'POST',
             headers:{
                 'content-type': 'application/json'
@@ -27,9 +31,11 @@ const Register = () => {
         })
         .then(res => res.json())
         .then(data => {
-            // console.log(data.user);
+            console.log(data.user)
+            setUser(data.user);
+            localStorage.setItem('user', JSON.stringify(data.user));
         })
-
+        navigate(from, {replace: true});
     }
     //password setting 
     const handlePassword = (event) =>{
@@ -55,7 +61,7 @@ const Register = () => {
             <div className="hero-content grid grid-cols-2 gap-[100px] lg:flex-row-reverse">
                 <div className="text-center lg:text-left ">
                     <img className='w-[400px] shadow-2xl rounded-2xl' src="" alt="" />
-           
+                    <h2 className="text-2xl">Teacher login</h2>
                 </div>
                 <div onSubmit={handleSubmit} className="card flex-shrink-0 shadow-2xl bg-base-100 w-[550px]">
                 <form className="card-body w-[540px] justify-center">
@@ -83,7 +89,7 @@ const Register = () => {
                     <input onChange={handlePassword} type="password" name='password' placeholder="password" className="input input-bordered" />
                    
                     <label className="label">
-                        <p className='label-text-alt'>Already have an account?</p><Link to='/auth/login' className="label-text-alt link link-hover">Login</Link>
+                        <p className='label-text-alt'>Already have an account?</p><Link to='/login' className="label-text-alt link link-hover">Login</Link>
                     </label>
                     </div>
                     {/* <div className="form-control">
@@ -108,5 +114,5 @@ const Register = () => {
     </div>
   )
 }
-
-export default Register
+ 
+export default TeacherRegister;

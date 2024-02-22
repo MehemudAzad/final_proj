@@ -21,10 +21,13 @@ const SingleCourse = () => {
     const [teachers, setTeachers] = useState([]);
 
     //loading the related teachers with this course
+    const getTeachers = () => {
+      fetch(`http://localhost:5002/courses/teachers/${course_id}`)
+      .then(res => res.json())
+      .then(data =>setTeachers(data.teachers))
+    }
     useEffect(()=>{
-        fetch(`http://localhost:5002/courses/teachers/${course_id}`)
-        .then(res => res.json())
-        .then(data =>setTeachers(data.teachers))
+        getTeachers();
     },[]);
 
     console.log(teachers);
@@ -65,7 +68,7 @@ const SingleCourse = () => {
 
                 <p className='my-4'>{course_description}</p>
                 <div>
-                  <button onClick={handleCourseEnroll} className="btn text-3xl btn-success bg-emerald-700 text-slate-100  w-[500px] absolute bottom-0 left-0">Enroll</button>
+                 <PrivateRoute><button onClick={handleCourseEnroll} className="btn text-3xl btn-success bg-emerald-700 text-slate-100  w-[500px] absolute bottom-0 left-0">Enroll</button></PrivateRoute> 
                 </div>
             </div>
             <div>
