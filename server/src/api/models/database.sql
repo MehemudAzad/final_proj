@@ -50,24 +50,31 @@ CREATE TABLE courses (
 --     student_id INT REFERENCES students(student_id),
 --     PRIMARY KEY (course_id, student_id)
 -- );
+-- CREATE TABLE course_student (
+--     course_id SERIAL REFERENCES courses(course_id),
+--     user_id INT REFERENCES users(id),
+--     PRIMARY KEY (course_id, user_id)
+-- );
 CREATE TABLE course_student (
     course_id SERIAL REFERENCES courses(course_id),
-    user_id INT REFERENCES users(id),
-    PRIMARY KEY (course_id, user_id)
+    student_id INT REFERENCES students(student_id),
+	rating INT,
+	review TEXT,
+	join_date DATE,
+    PRIMARY KEY (course_id, student_id)
 );
+
 alter table course_student 
 add column is_approved varchar(100);
 
 -- Course_Teacher Table
 CREATE TABLE course_teacher (
     course_id SERIAL REFERENCES courses(course_id),
-    user_id INT REFERENCES users(id),
-    PRIMARY KEY (course_id, user_id)
+    teacher_id INT REFERENCES teachers(teacher_id),
+    status VARCHAR(100),
+    PRIMARY KEY (course_id, teacher_id),
 );
 --added new column
-alter table course_teacher
-ADD COLUMN is_approved VARCHAR(100);
-
 
 -- Lesson Tabl
 CREATE TABLE lessons (
@@ -85,6 +92,7 @@ CREATE TABLE lectures (
     video_link VARCHAR(255),
     pdf_note VARCHAR(255)
 );
+
 
 -- Comment_Lecture Table
 CREATE TABLE comment_lecture (
