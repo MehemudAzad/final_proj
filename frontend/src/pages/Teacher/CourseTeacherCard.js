@@ -1,18 +1,22 @@
 import { Link } from "react-router-dom";
 import { FaUsersBetweenLines } from "react-icons/fa6";
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../../context/AuthProvider";
 
 const CourseTeacherCard = ({course}) => {
+    const {user} = useContext(AuthContext);
+    const [enrolled, setEnrolled] = useState(0);
     const {course_id, course_name,  course_description, course_price, total_lectures, duration, image_url} = course;
     
     // const [teachers, setTeachers] = useState([]);
 
     //loading the related teachers with this course
-    // useEffect(()=>{
-    //     fetch(`http://localhost:5002/courses/teachers/${course_id}`)
-    //     .then(res => res.json())
-    //     .then(data =>setTeachers(data.teachers))
-    // },[]);
-
+    useEffect(()=>{
+        fetch(`http://localhost:5002/course-total-student/${course_id}`)
+        .then(res => res.json())
+        .then(data =>setEnrolled(data.total_enrolled))
+    },[]);
+    console.log(enrolled)
 
     // console.log(teachers[0]?.username)
     //truncate text
@@ -37,11 +41,20 @@ const CourseTeacherCard = ({course}) => {
                 <div className="card-actions justify-between">
                 <div className="flex items-center gap-8">
                     <FaUsersBetweenLines  className="text-4xl"/> 
-                    800
+                    {enrolled}
                 </div>
                 <div className="flex items-center gap-5">
-                    <button className="btn btn-primary text-xl">Delete</button>
-                    <Link to={`/courses/main/${course_id}`}><button className="btn btn-primary text-xl">Teach</button></Link>
+                  {/* {
+                    user?.teacher_id === course?.teacher_id ?
+                    <>
+
+                        
+                    </> : <>
+                        <Link to={`/courses/${course_id}`}><button className="btn btn-primary text-xl">Explore</button></Link>
+                    </>
+                  } */}
+                  <button className="btn btn-primary text-xl">Delete</button>
+                        <Link to={`/courses/main/${course_id}`}><button className="btn btn-primary text-xl">Teach</button></Link>
                 </div>
                
                 </div>

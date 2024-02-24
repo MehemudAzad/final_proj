@@ -1,7 +1,13 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import TeacherCard from "./TeacherCard";
+import { Link } from "react-router-dom";
+import { FaPlusCircle } from "react-icons/fa";
+import { AuthContext } from "../../../context/AuthProvider";
 
 const Teachers = ({course}) => {
+    const {user} = useContext(AuthContext);
+    const [username, setUsername] = useState('');
+    const [users, setUsers] = useState([]);
     const [teachers, setTeachers]= useState([]);
 
     const getTeachers = () => {
@@ -13,16 +19,109 @@ const Teachers = ({course}) => {
         getTeachers();
     },[]);
 
+    const handleSearch = async () => {
+        try {
+        //   console.log(username);
+          const response = await fetch(`http://localhost:5002/teachers/${username}`);
+          if(response.ok) {
+              const data = await response.json();
+              setUsers(data);
+              console.log(data);
+          }
+        } catch (error) {
+          console.error('Error searching for user:', error.response);
+          setUsers(null);
+        }
+      };
+ 
+      
+    const handleInvitation = async (user_id) => {
+        console.log('inside invite functino ' , user_id);
+        try{
+            fetch('http://localhost:5003/project/invite', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({user_id : user_id, course_id :course?.course_id})
+          })
+          .then(response => {
+            if (response.ok) {
+              return response.json();
+            }
+            throw new Error('Network response was not ok.');
+          })
+          .then(data => {
+            console.log('File uploaded successfully:', data);
+          })
+          .catch(error => {
+            console.error('Error uploading file:', error);
+          });
+        }finally{
+
+        }  
+    }
+
     return ( 
-        <>teachers of this course are
+        <div className="w-[80%]">
+            <div>
+            {
+              user?.role === 'teacher' ?  <button className="btn w-full" onClick={()=>document.getElementById('my_modal_4').showModal()}>Invite <FaPlusCircle /></button> :
+              <></>
+            }
+           
+                   {/* You can open the modal using document.getElementById('ID').showModal() method */}
+                        <dialog id="my_modal_4" className="modal">
+                        <div className="modal-box w-11/12 max-w-5xl h-[500px]">
+                            <h3 className="font-bold text-lg mb-3">Search for collaborators!</h3>
+                             {/* take input  */}
+                             <div className="flex items-center gap-4">
+                             <input className="input w-full"
+                                type="text"
+                                placeholder="Enter username"
+                                value={username}
+                                onChange={(e) => {
+                                    setUsername(e.target.value); 
+                                    handleSearch();
+                                }} />
+                             </div>
+
+                            <div className="mt-3">
+                                {users && 
+                                 users?.map(user =>
+                                    <div className="flex items-center justify-between bg-gray-200 rounded-md p-2 my-2">
+                                      <div>
+                                        <p>Email: {user.email}</p>
+                                        <Link to={`/teacher/profile/view/${user?.id}`}><p>Username: <span className="text-blue-600 hover:underline">{user.username}</span></p></Link>
+                                      </div>
+                                      {/* Display other user data as needed */}
+                                      <div className="modal-action">
+                                        <form method="dialog">
+                                          <button onClick={()=>handleInvitation(user.id)} className="btn btn-primary">Invite</button>
+                                        </form>
+                                      </div>
+                                    </div>
+                                )
+                               }
+
+                            </div>
+                            <div className="modal-action">
+                            <form method="dialog">
+                                {/* if there is a button, it will close the modal */}
+                                <button className="btn btn-primary">Close</button>
+                            </form>
+                            </div>
+                        </div>
+                        </dialog>
+            </div>
             <div>
                 {
                     teachers?.map(teacher =>
-                            <TeacherCard key={teacher.id} teacher={teacher} />
+                            <TeacherCard key={teacher.id} teacher={teacher} course={course}/>
                         )
                 }
             </div>
-        </>
+        </div>
      );
 }
  

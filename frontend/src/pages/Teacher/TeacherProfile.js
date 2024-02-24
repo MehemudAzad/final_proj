@@ -8,6 +8,7 @@ import CourseTeacherCard from "./CourseTeacherCard";
 import { BiSolidInstitution } from "react-icons/bi";
 import Settings from "./Settings";
 import { MdOutlineSystemUpdateAlt } from "react-icons/md";
+import Invites from "./Invites";
 /*
 city: null
 country: null
@@ -119,6 +120,11 @@ const TeacherProfile = () => {
                 <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
                     {/* <h1 className="text-2xl">setings here </h1> */}
                     <Settings></Settings>
+                </div>
+                <input type="radio" name="my_tabs_2" role="tab" className="tab text-xl [--tab-bg:bg-blue-200] [--tab-border-color:blue-200]" aria-label="Invites" />
+                <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
+                    {/* <h1 className="text-2xl">setings here </h1> */}
+                    <Invites/>
                 </div>
             </div>
             

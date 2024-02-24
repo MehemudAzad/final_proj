@@ -19,12 +19,12 @@ const TeacherDashboard = () => {
     useEffect(()=>{
         const fetchData = async () => {
             try {
-                const response = await courseFinder.get(`/teacher-courses/${user.id}`)
+                const response = await courseFinder.get(`/teacher-courses/${user?.teacher_id}`)
                 // const data = await response.json();
                 console.log(response?.data?.courses)
                 setCoursesTeacher(response?.data?.courses);
             } catch (error) {
-
+                console.log('teacher dashboard : ' + error)
             }
         }
         fetchData()

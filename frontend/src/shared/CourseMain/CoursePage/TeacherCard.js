@@ -1,8 +1,11 @@
+import { useContext } from "react";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../../context/AuthProvider";
 
-const TeacherCard = ({teacher}) => {
-    console.log(teacher, "form teacher card");
-/**city
+const TeacherCard = ({ teacher, course }) => {
+  const { user } = useContext(AuthContext);
+  console.log(teacher, "form teacher card");
+  /**city
 : 
 "Dhaka"
 country
@@ -32,14 +35,34 @@ user_photo
 username
 : 
 "absk" */
-    const {id, teacher_id, role, username} = teacher;
-    return ( 
-        <>  
-            <div className="bg-indigo-50 p-4 rounded my-3">
-               <Link></Link> <h2>Name : {username}</h2>
-            </div>
+  const { id, teacher_id, role, username } = teacher;
+  console.log(teacher, "from teahcer card dfafd");
+  return (
+    <>
+      {user?.teacher_id === teacher?.teacher_id ? (
+        <>
+          hello
+          <div className="bg-indigo-50 p-4 rounded my-3">
+            <Link to={`/teacher/profile/${user?.teacher_id}`}>
+              <h2>
+                Name : <span className="text-blue-500">{username}</span>
+              </h2>
+            </Link>
+          </div>
         </>
-     );
-}
- 
+      ) : (
+        <>
+          <div className="bg-indigo-50 p-4 rounded my-3">
+            <Link to={`/teacher/profile/view/${teacher?.teacher_id}`}>
+              <h2>
+                Name : <span className="text-blue-500">{username}</span>
+              </h2>
+            </Link>
+          </div>
+        </>
+      )}
+    </>
+  );
+};
+
 export default TeacherCard;
