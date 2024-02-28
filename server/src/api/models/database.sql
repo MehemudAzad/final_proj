@@ -55,6 +55,8 @@ CREATE TABLE course_student (
     user_id INT REFERENCES users(id),
     PRIMARY KEY (course_id, user_id)
 );
+alter table course_student 
+add column is_approved varchar(100);
 
 -- Course_Teacher Table
 CREATE TABLE course_teacher (
@@ -62,9 +64,12 @@ CREATE TABLE course_teacher (
     user_id INT REFERENCES users(id),
     PRIMARY KEY (course_id, user_id)
 );
+--added new column
+alter table course_teacher
+ADD COLUMN is_approved VARCHAR(100);
 
 
--- Lesson Table
+-- Lesson Tabl
 CREATE TABLE lessons (
     lesson_id SERIAL PRIMARY KEY,
     course_id INT REFERENCES courses(course_id),
@@ -85,19 +90,17 @@ CREATE TABLE lectures (
 CREATE TABLE comment_lecture (
     comment_id SERIAL PRIMARY KEY,
     lecture_id INT REFERENCES lectures(lecture_id),
-    student_id INT REFERENCES students(student_id),
+    user_id INT REFERENCES users(id),
     description TEXT
 );
 
 -- Blogs Table
 CREATE TABLE blogs (
     blog_id SERIAL PRIMARY KEY,
-    teacher_id INT REFERENCES teachers(teacher_id),
+    user_id INT REFERENCES users(id),
     blog_content TEXT,
-    blog_title VARCHAR(255),
+    blog_title VARCHAR(500),
     blog_category VARCHAR(50),
-    read BOOLEAN,
-    reaction_count INT
 );
 
 -- Blog_Comments Table
@@ -174,75 +177,3 @@ VALUES ('Cybersecurity Advanced Topics', 'Explore advanced topics in cybersecuri
 --     job_profile VARCHAR(100),
 --     profession VARCHAR(100)
 -- );
-
-
-
-
-
-
-
-
---trigger for user registration 
-
-CREATE OR REPLACE FUNCTION PREVENT_DUPLICATE_REGISTRATION()
-RETURNS TRIGGER AS $$
-BEGIN 
-IF EXISTS(
-SELECT 1 FROM USERS WHERE EMAIL = NEW.EMAIL
-) THEN 
-  RAISE EXCEPTION 'USER WITH EMAIL % ALREADY EXISTS',NEW.EMAIL; 
-END IF; 
-RETURN NEW; 	
-
-END; 
-$$ LANGUAGE PLPGSQL; 
-
-CREATE OR REPLACE TRIGGER CHECK_DUPLICATE_REGISTRATION
-BEFORE INSERT ON USERS 
-FOR EACH ROW 
-EXECUTE FUNCTION PREVENT_DUPLICATE_REGISTRATION();
-
-
-
-
---trigger for course_student registration
-
-
-
-CREATE OR REPLACE FUNCTION PREVENT_DUPLICATE_ENROLL()
-RETURNS TRIGGER AS $$
-BEGIN 
-IF EXISTS(
-SELECT 1 FROM course_student WHERE course_student.student_id = NEW.STUDENT_ID AND course_student.course_id = NEW.COURSE_ID
-) THEN 
-RAISE EXCEPTION 'STUDENT ALREADY ENROLLED IN THIS COURSE';
-END IF; 
-RETURN NEW; 
-END; 
-$$ LANGUAGE plpgsql; 
-
-
-CREATE OR REPLACE TRIGGER CHECK_DUPLICATE_ENROLL 
-BEFORE INSERT ON course_student 
-FOR EACH ROW 
-EXECUTE FUNCTION PREVENT_DUPLICATE_ENROLL();
-
-
-
--- THERE CANNOT BE MORE THAN FIVE LECTURES UNDER A LESSON 
-
-CREATE OR REPLACE FUNCTION PREVENT_EXCESSIVE_LESSON()
-RETURNS TRIGGER AS $$
-BEGIN 
-IF (SELECT COUNT(*) FROM LESSONS WHERE lecture_id = NEW.lecture_id) = 5 
-THEN RAISE EXCEPTION 'TOO MANY LECTURES FOR THAT LESSON';
-END IF; 
-END; 
-$$ LANGUAGE plpgsql; 
-
-CREATE OR REPLACE TRIGGER CHECK_EXCESSIVE_LESSON 
-BEFORE INSERT ON LESSONS 
-FOR EACH ROW 
-EXECUTE FUNCTION PREVENT_EXCESSIVE_LESSON();
-
-
