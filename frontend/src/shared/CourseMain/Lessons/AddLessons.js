@@ -1,40 +1,37 @@
-import { useContext } from "react";
-// import { AuthContext } from "../../../context/AuthProvider";
+import { useContext, useState } from "react";
+import { AuthContext } from "../../../context/AuthProvider";
 import { MdLibraryAdd } from "react-icons/md";
-import { AuthContext } from "../../context/AuthProvider";
-import {useLoaderData, useParams} from "react-router-dom";
+import { FaPlusCircle } from "react-icons/fa";
 
-const AddLectures = () => {
-    const lesson = useLoaderData();
-    console.log(lesson[0])
+const AddLessons = ({course}) => {
     const {user} = useContext(AuthContext);
     const user_id = user?.id;
-    const teacher_id = user?.teacher_id;
-    const { lesson_id } = useParams();
+    const [selectedFile, setSelectedFile] = useState(null);
+
+    console.log(course, "from add lessons")
+    const handleFileChange = (event) => {
+      setSelectedFile(event.target.files[0]);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         //calling the form with event.target
         const form = e.target;
+        const lesson_description = form.description.value;
         const title = form.title.value;
-        const video_link = form.video_link.value;
-        
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('teacher_id', user?.teacher_id);
+        formData.append('course_id', course?.course_id);
+        formData.append('title', title);
+        formData.append('lesson_description', lesson_description);
+        console.log(formData);
         try {
-          const response = await fetch('http://localhost:5002/lecture', {
+          const response = await fetch('http://localhost:5002/lessons', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              lesson_id : lesson_id,
-              lecture_title: title,
-              video_link: video_link
-            }),
+            body: formData,
           });
-        console.log({
-            lesson_id : lesson_id,
-            lecture_title: title,
-            video_link: video_link
-          })
+    
           if (response.ok) {
             const result = await response.json();
             console.log('Course added successfully. Course ID:', result.courseId);
@@ -50,27 +47,35 @@ const AddLectures = () => {
         }
       };
     
+
       return (
         <div>
          <div className='mx-auto bg-white border-3 '>
                 <form onSubmit={handleSubmit}  className='border-3 w-[1200px]  mb-32 p-8 bg-white'>
-                <h1 className='flex items-center gap-3 text-4xl font-semibold text-blue-800 mb-5'><MdLibraryAdd />ADD NEW LECTURE</h1>
+                <h1 className='flex items-center gap-3 text-4xl font-semibold text-blue-800 mb-5'><MdLibraryAdd />ADD NEW LESSON</h1>
                 {/* name */}
                 <div className="form-control w-full ">
                     <label className="label">
-                        <span className="label-text text-blue-800">What is the title of this lecture?</span>
+                        <span className="label-text text-blue-800">What is the title of this lesson?</span>
                     </label>
                     <input  type="text"  name='title' placeholder="enter your lesson title" className="input input-bordered w-full bg-slate-200"  required/>
                 </div>
                 <div className="form-control">
                 <label className="label">
-                    <span className="label-text text-blue-800">Video Link</span>
+                    <span className="label-text text-blue-800">Lesson Description:</span>
                     <span className="label-text-alt"></span>
                 </label> 
-                <textarea className="textarea textarea-bordered h-24 bg-slate-200" name='video_link' placeholder="place video link here" required></textarea>
+                <textarea className="textarea textarea-bordered h-24 bg-slate-200" name='description' placeholder="lesson description" required></textarea>
+                </div>
+                <div className="flex items-center gap-5 rounded-t-xl">
+                <label className="label">
+                    <span className="label-text text-blue-800">Add lesson pdf :</span>
+                    <span className="label-text-alt"></span>
+                </label> 
+                  <input className="btn btn-primary flex items-center text-xl p-2" type="file"  onChange={handleFileChange} />
                 </div>
                 <button type="submit" class="w-full inline-block px-6 py-2 border-2 mt-5 border-blue-800 text-xl text-blue-800 font-medium leading-normal uppercase rounded hover:bg-blue-800 hover:text-white  focus:outline-none focus:ring-0 transition duration-150 ease-in-out">
-                    ADD LECTURE
+                    ADD LESSON
                 </button>
                 </form>
             </div>
@@ -79,4 +84,4 @@ const AddLectures = () => {
       )
 }
  
-export default AddLectures;
+export default AddLessons;

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 // import 'react-photo-view/dist/react-photo-view.css';
 /*{"course_id":1,"course_name":"Introduction to Computer Science","course_description":"Fundamentals of computer science and programming.","course_price":"49.99","total_lectures":20,"duration":"4 weeks","image_url":"intro_cs_image.jpg"}, */
-const Course = ({ course, handleDelete }) => {
+const Course = ({ course }) => {
     const {course_id, course_name,  course_description, course_price, total_lectures, duration, image_url} = course;
     
     // const [teachers, setTeachers] = useState([]);

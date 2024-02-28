@@ -9,7 +9,7 @@ const StudentDashboard = () => {
     console.log('helo')
     const user_id = user?.id;
     console.log(user_id);
-    useEffect(()=>{
+    useEffect(()=>{//http://localhost:5002/student-courses/1
         console.log('hello')
         fetch(`http://localhost:5002/student-courses/${user_id}`)
         .then(res => res.json())

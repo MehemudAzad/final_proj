@@ -10,11 +10,10 @@ const AuthProvider = ({children}) => {
     const [user, setUser] = useState(null);
 
 
-   
-
-    // const login = (email, password) =>{
-    //     return ;
-    // }
+//    useEffect(()=>{
+//         setUser(JSON.parse(localStorage.getItem('user')));
+//         console.log(user);
+//    },[])
 
 
     const authInfo = {

@@ -9,10 +9,10 @@ const LecturesPage = () => {
         const {lecture_id, pdf_note, video_link} = lecture;
     }
     return ( 
-        <>
+        <div className="px-6 py-4">
             <LectureVideo lecture= {lecture}></LectureVideo>
             <LectureComments lecture={lecture}></LectureComments>
-        </>
+        </div>
      );
 }
  

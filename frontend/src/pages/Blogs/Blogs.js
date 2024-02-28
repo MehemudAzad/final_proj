@@ -13,30 +13,16 @@ const Blogs = () =>{
     
     console.log(blogs);
 
-    //delete operation
-    // const handleDelete = id =>{
-    //     console.log(id);
-    //     const proceed = window.confirm('Are you sure, you want to cancel this review');
-    //     if(proceed){
-    //         fetch(`http://localhost:5002/blogs/${id}`, {
-    //             method: 'DELETE'
-    //            })
-    //         .then(res => res.json())
-    //         .then(data => {
-    //             console.log(data);
-    //         })
-    //     }
-    //     window.location = '/';
-    // }
     
   return (
     <>
-    <div className='text-5xl ml-40  md-10 text-black'>
-        All blogs ( {blogs.length} )
+    <div className='text-4xl pb-5 text-black'>
+        <p className='text-indigo-600'> All blogs ( {blogs.length} )</p>
+       
     </div>
-    <div className='grid grid-cols-2 bg-white w-[86%] m-auto'>
+    <div className='grid grid-cols-3 gap-10 bg-white w-[86%] m-auto'>
     {
-        blogs.map(blog => <Blog key={blog.blog_id} blog={blog.blog_content}></Blog>)
+        blogs.map(blog => <Blog blog = {blog} ></Blog>)
     }
     </div>
     </>

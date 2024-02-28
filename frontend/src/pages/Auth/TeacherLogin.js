@@ -1,15 +1,9 @@
 import { useContext } from "react";
-import { Link, useLocation, useNavigate} from "react-router-dom";
 import { AuthContext } from "../../context/AuthProvider";
-import useTitle from "../../hooks/useTitle";
+import { Link } from "react-router-dom";
 
-const Login = () => {
-    useTitle('Login')
+const TeacherLogin = () => {
     const {user, setUser} = useContext(AuthContext);
-    const navigate = useNavigate();
-    const location = useLocation();
-    // .state?.from?
-    const from = location.state?.from?.pathname || '/';
 
     const handleSubmit = event =>{
         event.preventDefault();
@@ -33,8 +27,7 @@ const Login = () => {
             setUser(data.user);
             localStorage.setItem('user', data.user);
         })
-        // Navigate()
-        navigate(from, {replace: true});
+        // window.location = '/courses';
     }
       
     // console.log(user.username);
@@ -62,12 +55,11 @@ const Login = () => {
                     <input type="password" name='password' placeholder="password" className="input input-bordered" />
                     <label className="label">
                         <a href="#" className="label-text-alt link link-hover">Forgot password?</a>
-                        <Link to='/auth/register' className="label-text-alt link link-hover">Don't have an account? Register</Link>
+                        <Link to='/register' className="label-text-alt link link-hover">Don't have an account? Register</Link>
                     </label>
-                    
                     </div>
                     <div className="form-control mt-6">
-                        <button type='submit' className="btn btn-primary">Login</button>
+                    <button type='submit' className="btn btn-primary">Login</button>
                     </div>
                 </form>
                 </div>
@@ -76,4 +68,4 @@ const Login = () => {
      );
 }
  
-export default Login;
+export default TeacherLogin;
