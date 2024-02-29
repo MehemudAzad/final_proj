@@ -8,10 +8,9 @@ CREATE TABLE users (
     date_of_birth DATE,
     mobile VARCHAR(15),
     city VARCHAR(50),
-    country VARCHAR(50)
-    user_photo VARCHAR(2000)
+    country VARCHAR(50),
+    user_photo VARCHAR(2000),
 );
-
 --email, firstname, lastname, password, date_of_birth, mobile, city, country
 
 --Teacher Table
@@ -44,17 +43,6 @@ CREATE TABLE courses (
     image_url VARCHAR(255)
 );
 
--- Course_Student Table
--- CREATE TABLE course_student (
---     course_id SERIAL REFERENCES courses(course_id),
---     student_id INT REFERENCES students(student_id),
---     PRIMARY KEY (course_id, student_id)
--- );
--- CREATE TABLE course_student (
---     course_id SERIAL REFERENCES courses(course_id),
---     user_id INT REFERENCES users(id),
---     PRIMARY KEY (course_id, user_id)
--- );
 CREATE TABLE course_student (
     course_id SERIAL REFERENCES courses(course_id),
     student_id INT REFERENCES students(student_id),
@@ -72,9 +60,8 @@ CREATE TABLE course_teacher (
     course_id SERIAL REFERENCES courses(course_id),
     teacher_id INT REFERENCES teachers(teacher_id),
     status VARCHAR(100),
-    PRIMARY KEY (course_id, teacher_id),
+    PRIMARY KEY (course_id, teacher_id)
 );
---added new column
 
 -- Lesson Tabl
 CREATE TABLE lessons (
@@ -82,7 +69,8 @@ CREATE TABLE lessons (
     course_id INT REFERENCES courses(course_id),
     teacher_id INT REFERENCES teachers(teacher_id),
     title VARCHAR(100),
-    lesson_description TEXT
+    lesson_description TEXT,
+    lesson_pdf VARCHAR(1000)
 );
 
 -- Lecture Table
@@ -90,7 +78,8 @@ CREATE TABLE lectures (
     lecture_id SERIAL PRIMARY KEY,
     lesson_id INT REFERENCES lessons(lesson_id),
     video_link VARCHAR(255),
-    pdf_note VARCHAR(255)
+    pdf_note VARCHAR(255),
+    lecture_title VARCHAR(255)
 );
 
 
@@ -116,14 +105,18 @@ CREATE TABLE blog_comments (
     blog_comment_id SERIAL PRIMARY KEY,
     blog_id INT REFERENCES blogs(blog_id),
     user_id INT REFERENCES users(id),
-    comment_description TEXT,
-    like_count INT
+    comment_text TEXT,
+    parent_comment_id INT REFERENCES blog_comments(blog_comment_id),
+    comment_date DATE
 );
 
 -- Quiz Table
 CREATE TABLE quizzes (
     quiz_id SERIAL PRIMARY KEY,
-    lesson_id INT REFERENCES lessons(lesson_id)
+    lesson_id INT REFERENCES lessons(lesson_id),
+    course_id INT references courses(course_id),
+    creator_id INT references teachers(teacher_id),
+    time INT 
 );
 
 -- Quiz_Student Table
@@ -146,6 +139,13 @@ CREATE TABLE questions (
     correct_ans VARCHAR(255)--make it variable
 );
 
+--store answers here
+create table quiz_answers_student(
+	quiz_id int references quizzes(quiz_id),
+	student_id int references students(student_id),
+	question_id int references questions(question_id),
+	answer varchar(1000)
+)
 
 
 --INSERT
