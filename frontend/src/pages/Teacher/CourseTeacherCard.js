@@ -12,10 +12,10 @@ const CourseTeacherCard = ({course}) => {
 
     //loading the related teachers with this course
     useEffect(()=>{
-        fetch(`http://localhost:5002/course-total-student/${course_id}`)
-        .then(res => res.json())
-        .then(data =>setEnrolled(data.total_enrolled))
-    },[]);
+      fetch(`http://localhost:5002/course-total-student/${course_id}`)
+      .then(res => res.json())
+      .then(data =>setEnrolled(data[0]?.total_enrolled))
+  },[]);
     console.log(enrolled)
 
     // console.log(teachers[0]?.username)
@@ -47,7 +47,7 @@ const CourseTeacherCard = ({course}) => {
                   {/* {
                     user?.teacher_id === course?.teacher_id ?
                     <>
-
+w
                         
                     </> : <>
                         <Link to={`/courses/${course_id}`}><button className="btn btn-primary text-xl">Explore</button></Link>

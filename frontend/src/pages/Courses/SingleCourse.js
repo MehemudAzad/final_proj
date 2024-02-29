@@ -126,13 +126,30 @@ const SingleCourse = () => {
             </div>
           </div>
           <div>
-            <img
+            {/* <img
               className="w-full transition-all duration-300 rounded-lg cursor-pointer filter hover:grayscale-0"
               src={
                 "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGNvbXB1dGVyfGVufDB8fDB8fHww"
               }
               alt=""
-            />
+            /> */}
+            {
+          course?.image_url ? 
+          <>
+            <img
+            className="w-full h-[500px] transition-all duration-300 rounded-lg cursor-pointer filter hover:grayscale-0"
+            src={course?.image_url}
+            alt="courses image"
+          />
+          </> : 
+          <><img
+          className="w-full h-[500px] transition-all duration-300 rounded-lg cursor-pointer filter hover:grayscale-0"
+          src={
+            "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGNvbXB1dGVyfGVufDB8fDB8fHww"
+          }
+          alt="courses image"
+        /></>
+        }
           </div>
           {/* image_url? image_url :  */}
         </div>

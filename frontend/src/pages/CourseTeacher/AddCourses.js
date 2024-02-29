@@ -15,6 +15,7 @@ const AddCourses = () => {
         const course_description = form.description.value;
         const course_price = form.price.value;
         const category = form.category.value;
+        console.log(category);
         
         try {//teacher_id, course_name, course_description, course_price, image_url
           const response = await fetch('http://localhost:5002/courses', {
@@ -54,37 +55,53 @@ const AddCourses = () => {
                 {/* name */}
                 <div className="form-control w-full ">
                     <label className="label">
-                        <span className="label-text text-blue-500">*What is the name of this course?</span>
+                        <span className="label-text text-blue-800"><span className="text-red-500">*</span> What is the name of this course?</span>
                     </label>
                     <input  type="text"  name='name' placeholder="name" className="input input-bordered w-full bg-slate-200"  required/>
                 </div>
                 <div className="form-control w-full ">
                     <label className="label">
-                        <span className="label-text text-blue-500">Give us a photo to display:</span>
+                        <span className="label-text text-blue-800">Give us a photo to display:</span>
                     </label>
                     <input type="text" name='photoURL' placeholder="photoURL" className="input input-bordered w-full bg-slate-200" />
                     </div>
                 <div className="form-control w-full ">
                     <label className="label">
-                        <span className="label-text text-blue-500">*What is the price of this course?</span>
+                        <span className="label-text text-blue-800"><span className="text-red-500">*</span> What is the price of this course?</span>
                     </label>
                     <input type="text" name='price' placeholder="price" className="input input-bordered w-full bg-slate-200"  required/>
                     </div>
                 <div className="form-control">
                 <label className="label">
+                    <span className="label-text text-blue-800"><span className="text-red-500">*</span> Course category:</span>
+                    <span className="label-text-alt"></span>
+                </label> 
+                 <select name="category" className="select select-bordered w-full bg-slate-200">
+                    <option disabled selected>What catagory does this course belong to?</option>
+                    <option>Web Development</option>
+                    <option>Machine Learning</option>
+                    <option>Data Structure</option>
+                    <option>Data Science</option>
+                    <option>Dev OPS</option>
+                    <option>Operating System</option>
+                    <option></option>
+                  </select>
+                </div>
+                {/* <div className="form-control">
+                <label className="label">
                     <span className="label-text text-blue-500">*Course category:</span>
                     <span className="label-text-alt"></span>
                 </label> 
                 <input type="text" name='category' placeholder="course category" className="input input-bordered w-full bg-slate-200"  required/>
-                </div>
+                </div> */}
                 <div className="form-control">
                 <label className="label">
-                    <span className="label-text text-blue-500">Course Description:</span>
+                    <span className="label-text text-blue-800">Course Description:</span>
                     <span className="label-text-alt"></span>
                 </label> 
                 <textarea className="textarea textarea-bordered h-24 bg-slate-200" name='description' placeholder="description" ></textarea>
                 </div>
-                <button type="submit" class="w-full inline-block px-6 py-2 border-2 mt-5 border-blue-600 text-xl text-blue-600 font-medium leading-normal uppercase rounded hover:bg-blue-500 hover:text-white  focus:outline-none focus:ring-0 transition duration-150 ease-in-out">
+                <button type="submit" class="w-full inline-block px-6 py-2 border-2 mt-5 border-blue-600 text-xl text-blue-600 font-medium leading-normal uppercase rounded hover:bg-blue-800 hover:text-white  focus:outline-none focus:ring-0 transition duration-150 ease-in-out">
                     ADD COURSE
                 </button>
                 </form>
