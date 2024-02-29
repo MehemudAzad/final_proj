@@ -15,7 +15,7 @@ const TeacherProfileView = () => {
   const courses = data.courses;
   const userInfo = data.user;
   const [selectedFile, setSelectedFile] = useState(null);
-  const { city, country, id, institution, username } = user;
+  const { city, country, id, institution, username } = userInfo;
   console.log(userInfo.user_photo);
   // console.log(user)
   const handleFileChange = (event) => {
@@ -67,9 +67,6 @@ const TeacherProfileView = () => {
                 onChange={handleFileChange}
               />
             </label>
-            <button className="btn" onClick={handleFileUpload}>
-              save
-            </button>
           </div>
           <div className="p-5">
             <h2 className="flex items-center gap-3 text-3xl">
@@ -80,12 +77,21 @@ const TeacherProfileView = () => {
               <span>
                 <BiSolidInstitution />
               </span>
-              {institution}
+              {/* {institution} */}
+              {
+                  userInfo?.institution ?  
+                  <>{institution}</> :
+                  <>not available</>
+                }
             </h3>
             <div className="flex items-center gap-3 text-xl py-2">
               <IoLocation />
               <h3>
-                {country} , {city}
+                {
+                  userInfo?.country ?  
+                  <>{country} , {city}</> :
+                  <>not available</>
+                }
               </h3>
             </div>
             <div className="flex items-center gap-5 pt-10">
@@ -111,7 +117,6 @@ const TeacherProfileView = () => {
                 className="tab-content bg-base-100 border-base-300 rounded-box p-6"
               >
                 <section>
-                  <h2 className="text-3xl uppercase">courses </h2>
                   <div>
                     {courses.map((course) => (
                       <CourseTeacherCard

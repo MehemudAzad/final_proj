@@ -1,11 +1,10 @@
 import { useContext, useState } from "react";
+import { MdDriveFolderUpload, MdLibraryAdd } from "react-icons/md";
 import { AuthContext } from "../../../context/AuthProvider";
-import { MdLibraryAdd } from "react-icons/md";
-import { FaPlusCircle } from "react-icons/fa";
-import { MdDriveFolderUpload } from "react-icons/md";
+// import { AuthContext } from "../../context/AuthProvider";
+// import { useContext, useEffect, useState } from "react";
 
-
-const AddLessons = ({course}) => {
+const ModalAddLessons = ({lessons, course}) => {
     const {user} = useContext(AuthContext);
     const user_id = user?.id;
     const [selectedFile, setSelectedFile] = useState(null);
@@ -50,10 +49,29 @@ const AddLessons = ({course}) => {
       };
     
 
-      return (
-        <div>
-         <div className='mx-auto bg-white border-3 '>
-                <form onSubmit={handleSubmit}  className='border-3 w-[1200px]  mb-32 p-8 bg-white'>
+    return ( 
+        <div className="p-4">  
+        <div className="flex items-center justify-between w-3/4">
+            <h2 className="text-4xl">Lessons : {lessons.length}</h2>
+            {
+                    user?.role === "teacher" ? 
+                    <>
+                        <button className="btn" onClick={()=>document.getElementById('my_modal_4').showModal()}>Add Lesson</button>
+                    </>
+                    :
+                    <>
+                    </>
+                   } 
+            
+            
+        </div>
+            {/* You can open the modal using document.getElementById('ID').showModal() method */}
+             {/* Displaying questions */}
+             
+            <dialog id="my_modal_4" className="modal">
+            <div className="modal-box w-11/12 max-w-5xl relative">
+                
+            <form onSubmit={handleSubmit}  className='border-3 p-8 bg-white'>
                 <h1 className='flex items-center gap-3 text-4xl font-semibold text-blue-800 mb-5'><MdLibraryAdd />ADD NEW LESSON</h1>
                 {/* name */}
                 <div className="form-control w-full ">
@@ -84,10 +102,19 @@ const AddLessons = ({course}) => {
                     ADD LESSON
                 </button>
                 </form>
+
+                <div className="modal-action flex justify-end">
+                <form method="dialog">
+                    {/* if there is a button, it will close the modal */}
+                    <button className="btn rounded-full absolute top-5 right-5"><span> X </span></button>
+                </form>
+                
+                </div>
             </div>
+            </dialog>
+           
         </div>
-       
-      )
+     );
 }
  
-export default AddLessons;
+export default ModalAddLessons;

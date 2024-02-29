@@ -5,6 +5,9 @@ import LessonCard from "../Lessons/LessonCard";
 import AddLessons from "../Lessons/AddLessons";
 import Outline from "./Outline";
 import Teachers from "./Teachers";
+import CourseFiles from "./CourseFiles";
+import Quizes from "./Quizes";
+import ModalAddLessons from "../Lessons/ModalAddLessons";
 
 const CourseMain = () => {
     const course = useLoaderData();
@@ -63,17 +66,19 @@ const CourseMain = () => {
           }
     }
     return ( 
-        <div className="p-12">
-            <div className="mt-8">
-                <h1 className="text-5xl mb-8">{course_name}</h1>
+        <div className="p-6">
+            <div className="">
+                <h1 className="text-4xl pt-4 bg-">{course_name}</h1>
             </div>
             {/* 
                 add tabs here  
             */}
             <div role="tablist" className="tabs tabs-bordered mt-10">
-            <input type="radio" name="my_tabs_1" role="tab" className="tab text-2xl px-12" aria-label="Lessons" defaultChecked/>
+            <input type="radio" name="my_tabs_1" role="tab" className="tab text-xl mx-1 px-12" aria-label="LESSONS" defaultChecked/>
             <div role="tabpanel" className="tab-content p-10">
-                <h2 className="text-4xl">Lessons : {lessons.length}</h2>
+                <div>
+                    <ModalAddLessons lessons={lessons} course={course}></ModalAddLessons>
+                </div>
                 <section>
                     {
                         lessons.map(lesson => 
@@ -82,25 +87,19 @@ const CourseMain = () => {
                     }
                 </section>
             </div>
-                   {
-                    user?.role === "teacher" ? 
-                    <>
-                        <input type="radio" name="my_tabs_1" role="tab" className="tab text-2xl px-12" aria-label="Add Lessons" />
-                        <div role="tabpanel" className="tab-content p-10">
-                            <AddLessons course={course}></AddLessons>
-                        </div>
-                    </>
-                    :
-                    <>
-                    </>
-                   } 
-            
-
-            <input type="radio" name="my_tabs_1" role="tab" className="tab text-2xl px-12" aria-label="Outline" />
+            <input type="radio" name="my_tabs_1" role="tab" className="tab text-xl mx-1 px-12" aria-label="OUTLINE" />
             <div role="tabpanel" className="tab-content p-10">
                 <Outline></Outline> 
             </div>
-            <input type="radio" name="my_tabs_1" role="tab" className="tab text-2xl px-12" aria-label="Teachers" />
+            <input type="radio" name="my_tabs_1" role="tab" className="tab text-xl mx-1 px-12" aria-label="MATERIALS" />
+            <div role="tabpanel" className="tab-content p-10">
+                <CourseFiles course={course}></CourseFiles> 
+            </div>
+            <input type="radio" name="my_tabs_1" role="tab" className="tab text-xl mx-1 px-12" aria-label="QUIZ" />
+            <div role="tabpanel" className="tab-content p-10">
+                <Quizes course={course}></Quizes> 
+            </div>
+            <input type="radio" name="my_tabs_1" role="tab" className="tab text-xl mx-1 px-12" aria-label="TEACHERS" />
             <div role="tabpanel" className="tab-content p-10">
                 <Teachers course={course}></Teachers>
             </div>

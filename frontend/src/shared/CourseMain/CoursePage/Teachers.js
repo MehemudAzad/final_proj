@@ -66,17 +66,17 @@ const Teachers = ({course}) => {
         <div className="w-[80%]">
             <div>
             {
-              user?.role === 'teacher' ?  <button className="btn w-full" onClick={()=>document.getElementById('my_modal_4').showModal()}>Invite <FaPlusCircle /></button> :
+              user?.role === 'teacher' ?  <button className="btn w-full" onClick={()=>document.getElementById('my_modal_5').showModal()}>Invite <FaPlusCircle /></button> :
               <></>
             }
            
                    {/* You can open the modal using document.getElementById('ID').showModal() method */}
-                        <dialog id="my_modal_4" className="modal">
+                        <dialog id="my_modal_5" className="modal">
                         <div className="modal-box w-11/12 max-w-5xl h-[500px]">
                             <h3 className="font-bold text-lg mb-3">Search for collaborators!</h3>
                              {/* take input  */}
                              <div className="flex items-center gap-4">
-                             <input className="input w-full"
+                             <input className="input w-full bg-gray-200"
                                 type="text"
                                 placeholder="Enter username"
                                 value={username}
@@ -89,7 +89,7 @@ const Teachers = ({course}) => {
                             <div className="mt-3">
                                 {users && 
                                  users?.map(user =>
-                                    <div className="flex items-center justify-between bg-gray-200 rounded-md p-2 my-2">
+                                    <div className="flex items-center justify-between bg-indigo-100 rounded-md p-2 my-3 hover:bg-indigo-200">
                                       <div>
                                         <p>Email: {user.email}</p>
                                         <Link to={`/teacher/profile/view/${user?.id}`}><p>Username: <span className="text-blue-600 hover:underline">{user.username}</span></p></Link>
