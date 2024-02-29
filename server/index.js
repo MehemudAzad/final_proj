@@ -56,6 +56,60 @@ async function run() {
     //     // res.send({token});
     // })
     // app.use('/images', express.static(path.join(__dirname, 'images')));
+
+    /*************************
+     *    Admin
+     *************************/
+    app.get("/pendingCourses", async (req, res) => {
+      const course_status = "PENDING";
+      try {
+        const result = await pool.query(
+          "SELECT * FROM COURSES WHERE course_status = $1",
+          [course_status]
+        );
+        res.json(result.rows);
+      } catch (err) {
+        console.error(err.message);
+      }
+    });
+
+    //approve a course
+    app.put("/courses/approve/:id", async (req, res) => {
+      try {
+        const { id } = req.params;
+        const approveCourse = await pool.query(
+          "UPDATE COURSES SET course_status = 'APPROVED' WHERE course_id = $1",
+          [id]
+        );
+        const teacher_id = await pool.query(
+          "SELECT teacher_id FROM courses WHERE course_id = $1",
+          [id]
+        );
+        const teacherId = teacher_id.rows[0].teacher_id;
+        const query = await pool.query(
+          "INSERT INTO course_teacher (course_id, teacher_id, status) VALUES ($1, $2,$3)",
+          [id, teacherId, "APPROVED"]
+        );
+        res.json("Course was approved!");
+      } catch (err) {
+        console.error(err.message);
+      }
+    });
+
+    //decline a course
+
+    app.delete("/courses/decline/:id", async (req, res) => {
+      try {
+        const { id } = req.params;
+        const declineCourse = await pool.query(
+          "DELETE FROM COURSES WHERE course_id = $1",
+          [id]
+        );
+        res.json("Course was declined!");
+      } catch (err) {
+        console.error(err.message);
+      }
+    });
     /*************************
      *    Authentication
      *************************/
@@ -105,19 +159,20 @@ async function run() {
         await pool.query(teacherUpdateQuery, teacherUpdateValues);
 
         res.status(200).json({
-            success: true,
-            message: "User and teacher data updated successfully",
+          success: true,
+          message: "User and teacher data updated successfully",
         });
       } catch (error) {
         console.error("Error updating user and teacher data:", error);
         res.status(500).json({
-            success: false,
-            message: "Error updating user and teacher data",
+          success: false,
+          message: "Error updating user and teacher data",
         });
       }
     });
 
-    app.post("/register", async (req, res) => {dd
+    app.post("/register", async (req, res) => {
+      dd;
       try {
         const { email, username, password } = req.body;
 
@@ -587,32 +642,32 @@ async function run() {
     /*************************
      *    Lessons
      *************************/
-    app.post("/upload", upload.single("file"), async (req, res) => {
-      const { originalname, path } = req.file;
-      const { user_id, project_id, commit_message } = req.body;
-      // Check if a file was provided
-      if (!req.file) {
-        return res.status(400).send("No file uploaded");
-      }
-      try {
-        const query =
-          "INSERT INTO submission (commit_id, user_id, project_id, file_path) VALUES ($1, $2, $3, $4, $5) RETURNING *";
-        const values = [
-          commitId,
-          user_id,
-          project_id,
-          req.file?.originalname,
-          req.file?.path,
-        ];
+    // app.post("/upload", upload.single("file"), async (req, res) => {
+    //   const { originalname, path } = req.file;
+    //   const { user_id, project_id, commit_message } = req.body;
+    //   // Check if a file was provided
+    //   if (!req.file) {
+    //     return res.status(400).send("No file uploaded");
+    //   }
+    //   try {
+    //     const query =
+    //       "INSERT INTO submission (commit_id, user_id, project_id, file_path) VALUES ($1, $2, $3, $4, $5) RETURNING *";
+    //     const values = [
+    //       commitId,
+    //       user_id,
+    //       project_id,
+    //       req.file?.originalname,
+    //       req.file?.path,
+    //     ];
 
-        console.log("upload called");
-        const result = await pool.query(query, values);
-        res.status(200).send("File uploaded successfully");
-      } catch (error) {
-        console.error("Error uploading file:", error);
-        res.status(500).send("Error uploading file");
-      }
-    });
+    //     console.log("upload called");
+    //     const result = await pool.query(query, values);
+    //     res.status(200).send("File uploaded successfully");
+    //   } catch (error) {
+    //     console.error("Error uploading file:", error);
+    //     res.status(500).send("Error uploading file");
+    //   }
+    // });
     app.post("/lessons", upload.single("file"), async (req, res) => {
       try {
         const { title, lesson_description, teacher_id, course_id } = req.body;
@@ -770,11 +825,11 @@ async function run() {
     `;
 
         const result = await pool.query(fetchQuery, [lesson_id]);
-        if (result.rows.length === 0) {
-          res.status(200).json([{ lesson_id: lesson_id }]);
-        } else {
-          res.status(200).json(result.rows);
-        }
+        // if (result.rows.length === 0) {
+        //   res.status(200).json([{ lesson_id: lesson_id }]);
+        // } else {
+        // }
+        res.status(200).json(result.rows);
       } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal Server Error" });
@@ -964,6 +1019,78 @@ async function run() {
         console.error(err.message);
       }
     });
+    /**-=--=-=-=-=-=-=-=-=-
+     * COURSE FILES STORAGE AND UPLOAD
+    =-=--=-=-=-=-=-=-=-=-=*/
+    // Upload a file in a course as a teacher
+    app.post("/upload", upload.single("file"), async (req, res) => {
+      // const { originalname, path } = req.file;
+      const { teacher_id, course_id, commit_message } = req.body;
+      // Check if a file was provided
+      if (!req.file) {
+        return res.status(400).send("No file uploaded");
+      }
+      try {
+        // const queryCommit = 'INSERT INTO files (course_id, user_id) VALUES ($1, $2, $3) RETURNING *';
+        // const valuesCommit = [course_i, commit_message, user_id];
+        // const resultCommit = await pool.query(queryCommit, valuesCommit);
+        // const commitId = resultCommit.rows[0].id;
+
+        const query =
+          "INSERT INTO files (teacher_id, course_id, file_name, file_path) VALUES ($1, $2, $3, $4) RETURNING *";
+        const values = [
+          teacher_id,
+          course_id,
+          req.file?.originalname,
+          req.file?.path,
+        ];
+
+        console.log("upload called");
+        const result = await pool.query(query, values);
+        res.status(200).send("File uploaded successfully");
+      } catch (error) {
+        console.error("Error uploading file:", error);
+        res.status(500).send("Error uploading file");
+      }
+    });
+    /**-=--=-=-=-=-=-=-=-=-
+     *  SUBMISSIONS
+    =-=--=-=-=-=-=-=-=-=-=*/
+    //get the files in a course
+    app.get("/submission/:course_id", async (req, res) => {
+      try {
+        const projectId = req.params.course_id;
+        const query = `SELECT F.*, U.username AS name 
+        FROM files F JOIN teachers T ON (F.teacher_id = T.teacher_id) 
+        JOIN users U ON (U.id = T.user_id)
+        WHERE course_id = $1`;
+        const values = [projectId];
+        const result = await pool.query(query, values);
+        res.json(result.rows);
+      } catch (error) {
+        console.error("Error fetching files:", error);
+        res.status(500).send("Error fetching files");
+      }
+    });
+    //download a file in a course
+    app.get("/submission-download/:id", async (req, res) => {
+      const fileId = req.params.id;
+      // console.log(fileId);
+      const query = "SELECT * FROM files WHERE file_id = $1";
+      const values = [fileId];
+
+      try {
+        const result = await pool.query(query, values);
+        const file = result.rows[0];
+        const filePath = file.file_path;
+        console.log(filePath);
+        res.download(filePath);
+      } catch (error) {
+        console.error("Error fetching file:", error);
+        res.status(500).send("Error fetching file");
+      }
+    });
+
     //endpoint for approving a course
     app.post("/course-approve", async (req, res) => {
       try {
