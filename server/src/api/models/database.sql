@@ -43,12 +43,22 @@ CREATE TABLE courses (
     image_url VARCHAR(255)
 );
 
+
+--FILES
+CREATE TABLE files (
+     file_id SERIAL PRIMARY KEY,
+     teacher_id INT references teachers(teacher_id),
+     course_id INT references courses(course_id),
+     file_name TEXT,
+     file_path TEXT
+);
+
 CREATE TABLE course_student (
     course_id SERIAL REFERENCES courses(course_id),
     student_id INT REFERENCES students(student_id),
-	rating INT,
-	review TEXT,
-	join_date DATE,
+    rating INT,
+    review TEXT,
+    join_date DATE,
     PRIMARY KEY (course_id, student_id)
 );
 
