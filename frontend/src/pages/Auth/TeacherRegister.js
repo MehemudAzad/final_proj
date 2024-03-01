@@ -1,11 +1,18 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useContext, useState } from "react";
+import { Link, useLocation, useNavigate} from "react-router-dom";
+import { AuthContext } from "../../context/AuthProvider";
 
 const TeacherRegister = () => {
+    const {user, setUser} = useContext(AuthContext);
     const [error, setError] = useState('');
     const [errorPass, setErrorPass] = useState('');
     const [errorFirebase, setErrorFirebase] = useState('');
     const [errorPassConfirm, setErrorPassConfirm] = useState('');
+
+    const navigate = useNavigate();
+    const location = useLocation();
+    // .state?.from?
+    const from = location.state?.from?.pathname || '/';
 
     const handleSubmit = event=>{
         event.preventDefault(); 
@@ -13,10 +20,9 @@ const TeacherRegister = () => {
         const username = form.name.value;
         const email = form.email.value;
         const password = form.password.value;
-        console.log("helo")
-        console.log(username, email, password);
+        // console.log(username, email, password);
 
-        fetch('http://localhost:5002/teacher/register', {
+        fetch('http://localhost:5002/teacher-register', {
             method: 'POST',
             headers:{
                 'content-type': 'application/json'
@@ -25,9 +31,11 @@ const TeacherRegister = () => {
         })
         .then(res => res.json())
         .then(data => {
-            // console.log(data.user);
+            console.log(data.user)
+            setUser(data.user);
+            localStorage.setItem('user', JSON.stringify(data.user));
         })
-
+        navigate(from, {replace: true});
     }
     //password setting 
     const handlePassword = (event) =>{

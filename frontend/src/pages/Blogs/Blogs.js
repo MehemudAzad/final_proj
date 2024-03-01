@@ -15,18 +15,18 @@ const Blogs = () =>{
 
     
   return (
-    <>
-    <div className='text-4xl pb-5 text-black'>
+    <div className='w-[90%] m-auto'>
+        <div className='text-4xl pb-5 text-black '>
         <p className='text-indigo-600'> All blogs ( {blogs.length} )</p>
        
+      </div>
+        <div className='grid grid-cols-4 gap-10 bg-white  m-auto'>
+        {
+            blogs.map(blog => <Blog blog = {blog} ></Blog>)
+        }
+        </div>
     </div>
-    <div className='grid grid-cols-3 gap-10 bg-white w-[86%] m-auto'>
-    {
-        blogs.map(blog => <Blog blog = {blog} ></Blog>)
-    }
-    </div>
-    </>
-    
+   
   )
 }
 export default Blogs;

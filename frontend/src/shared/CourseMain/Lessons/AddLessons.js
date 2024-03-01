@@ -2,6 +2,8 @@ import { useContext, useState } from "react";
 import { AuthContext } from "../../../context/AuthProvider";
 import { MdLibraryAdd } from "react-icons/md";
 import { FaPlusCircle } from "react-icons/fa";
+import { MdDriveFolderUpload } from "react-icons/md";
+
 
 const AddLessons = ({course}) => {
     const {user} = useContext(AuthContext);
@@ -67,12 +69,16 @@ const AddLessons = ({course}) => {
                 </label> 
                 <textarea className="textarea textarea-bordered h-24 bg-slate-200" name='description' placeholder="lesson description" required></textarea>
                 </div>
-                <div className="flex items-center gap-5 rounded-t-xl">
+                <div className="flex items-center gap-5 rounded-t-xl mt-">
                 <label className="label">
                     <span className="label-text text-blue-800">Add lesson pdf :</span>
                     <span className="label-text-alt"></span>
                 </label> 
-                  <input className="btn btn-primary flex items-center text-xl p-2" type="file"  onChange={handleFileChange} />
+                <label className="flex items-center flex-row-reverse hover:cursor-pointer">
+                  <input className="btn btn-primary flex items-center text-xl p-2 invisible" type="file"  onChange={handleFileChange} />
+                  <MdDriveFolderUpload className="text-3xl"/>
+                </label>
+                  
                 </div>
                 <button type="submit" class="w-full inline-block px-6 py-2 border-2 mt-5 border-blue-800 text-xl text-blue-800 font-medium leading-normal uppercase rounded hover:bg-blue-800 hover:text-white  focus:outline-none focus:ring-0 transition duration-150 ease-in-out">
                     ADD LESSON

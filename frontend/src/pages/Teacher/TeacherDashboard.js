@@ -3,12 +3,14 @@ import courseFinder from "../../apis/courseFinder";
 import { AuthContext } from "../../context/AuthProvider";
 import Course from "../Courses/Course";
 import CourseMain from "../../shared/CourseMain/CoursePage/CourseMain";
-import CourseTeacherCard from "../CourseTeacher/CourseTeacherCard";
+import CourseTeacherCard from "./CourseTeacherCard";
 import AddCourses from "../CourseTeacher/AddCourses";
 import Outline from "../../shared/CourseMain/CoursePage/Outline";
+import useTitle from "../../hooks/useTitle";
 
 const TeacherDashboard = () => {
     //load the course using course_teacher table
+    useTitle('Dashboard');
     const [coursesTeacher, setCoursesTeacher] = useState([])
     const {user} = useContext(AuthContext);
     console.log(user);
@@ -17,12 +19,12 @@ const TeacherDashboard = () => {
     useEffect(()=>{
         const fetchData = async () => {
             try {
-                const response = await courseFinder.get(`/teacher-courses/${user.id}`)
+                const response = await courseFinder.get(`/teacher-courses/${user?.teacher_id}`)
                 // const data = await response.json();
                 console.log(response?.data?.courses)
                 setCoursesTeacher(response?.data?.courses);
             } catch (error) {
-
+                console.log('teacher dashboard : ' + error)
             }
         }
         fetchData()

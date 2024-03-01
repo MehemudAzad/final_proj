@@ -25,10 +25,20 @@ const Register = () => {
             },
             body:JSON.stringify({ username, email, password})
         })
-        .then(res => res.json())
-        .then(data => {
-            // console.log(data.user);
+        .then(res => {
+            if (res.sucess) {
+                return res.json();
+            } else if (res.status === 500) {
+                throw new Error('User already exists');
+            } else {
+                throw new Error('Failed to register user');
+            }
         })
+        .catch(error => {
+            // Handle errors here
+            console.error('Error registering user:', error.message);
+            alert(error.message);
+        });
 
     }
     //password setting 
