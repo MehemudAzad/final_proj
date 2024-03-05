@@ -1017,7 +1017,7 @@ async function run() {
     });
 
     /*************************
-     *  QUIZ
+     *    QUIZ
      *************************/
     app.post("/add-Questions", async(req,res) =>{
       try{
@@ -1030,10 +1030,10 @@ async function run() {
         const values = [lesson_id, course_id, creator_id, time];
         const result = await pool.query(query, values);
         const quiz_id = result.rows[0].quiz_id;
-  
+        console.log(quiz_id);
         await Promise.all(questions.map(async (question) => {
           const query = `INSERT INTO questions (quiz_id, mark, option1, option2, option3, option4, correct_ans, question) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`;
-          const values = [quiz_id, question.mark, question.option1, question.option2, question.option3, question.option4, question.correct_ans];
+          const values = [quiz_id, question.mark, question.option1, question.option2, question.option3, question.option4, question.correct_ans, question.question];
           await pool.query(query, values);
       }));
         // Send success response
@@ -1089,23 +1089,55 @@ async function run() {
       try{
         const course_id = req.params.course_id;
         const queryResult = await pool.query(`
-        SELECT z.quiz_id, z.lesson_id, z.course_id, z.creator_id, z.time, COUNT(q.*) AS question_count
-        FROM quizzes z 
-        JOIN questions q ON(z.quiz_id = q.quiz_id)  
-        WHERE course_id = $1
-        GROUP BY z.quiz_id, z.lesson_id, z.course_id, z.creator_id, z.time`,
+         `,
         [course_id]);
         res.json(queryResult.rows);
       }catch(error) {
         console.error("Error fetching quizes:", error);
         res.status(500).send("Error fetching quizes");
       }
-    
     })
-    /*
-      //get questions of a quiz 
-      time 
+    //check if a student has taken a quiz
+    app.get('/quizTaken/:quizId/:studentId', async (req, res) => {
+        try {
+            const { quizId, studentId } = req.params;
+    
+            // Query the quiz_students table to check if the student has taken the quiz
+            const query = 'SELECT * FROM quiz_students WHERE quiz_id = $1 AND student_id = $2';
+            const { rows } = await pool.query(query, [quizId, studentId]);
+    
+            // If the query returns any rows, it means the student has taken the quiz
+            const hasTakenQuiz = rows.length > 0;
+    
+            res.status(200).json({ hasTakenQuiz });
+        } catch (error) {
+            console.error('Error checking if quiz is taken:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+    
+      //get the questions a student has answered and his marks
+      app.get('/quiz-answers/:quizId/:studentId', async (req, res) => {
+        try {
+            const { quizId, studentId } = req.params;
+    
+            // Query the quiz_students table to check if the student has taken the quiz
+            const query = `select * from quiz_answers_student a join questions q on (a.question_id = q.question_id)
+            where a.student_id = $1 and a.quiz_id = $2`;
+            const answersResult = await pool.query(query, [studentId, quizId]);
 
+            const marks = await pool.query(`select marks from quiz_students
+            where student_id = $1 and quiz_id = $2`, [studentId, quizId]) ;
+            // If the query returns any rows, it means the student has taken the quiz
+            res.json({answers : answersResult.rows , marks : marks.rows})
+        } catch (error) {
+            console.error('Error checking if quiz is taken:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+  
+    /*
+      //get questions of a quiz time 
     */
     app.get("/quiz/:quiz_id", async(req,res)=>{
       try{
