@@ -26,7 +26,7 @@ const CreateQuizPage = () => {
         const option2 = formData.get('option2');
         const option3 = formData.get('option3');
         const option4 = formData.get('option4');
-        const correctAns = formData.get('correctAns');
+        const correctAns = formData.get('answer');
         const mark = formData.get('mark');
         console.log(question, option1, option2, option3, option4)
         let Obj = {

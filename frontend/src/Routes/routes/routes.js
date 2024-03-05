@@ -178,7 +178,7 @@ export const routes = createBrowserRouter([
       fetch(`http://localhost:5002/quiz/${params.quiz_id}`),
   },
   {
-    path: "/take-quiz/:quiz_id",
+    path: "/take-quiz/:quiz_id/:student_id",
     element: <CorrectAnswersPage></CorrectAnswersPage>,
     loader: ({ params }) =>///quiz/:quiz_id
       fetch(`http://localhost:5002/quiz/${params.quiz_id}`),
