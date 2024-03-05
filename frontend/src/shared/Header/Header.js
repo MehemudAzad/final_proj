@@ -60,8 +60,6 @@ const Header = () => {
                             <img src="https://png.pngtree.com/png-vector/20210702/ourmid/pngtree-black-chess-pawn-png-image_3539520.jpg" />
 
                           }
-                         
-                          
                         </div>
                       </label>
                     </div>

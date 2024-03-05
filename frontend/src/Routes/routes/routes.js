@@ -27,6 +27,8 @@ import TeacherProfileView from "../../pages/Teacher/TeacherProfileView";
 import Notification from "../../pages/Teacher/Notification";
 import StudentNotification from "../../pages/Student/StudentNotification";
 import CreateQuizPage from "../../pages/Teacher/CreateQuizPage";
+import TakeQuiz from "../../pages/Student/TakeQuiz";
+import CorrectAnswersPage from "../../pages/Student/CorrectAnswersPage";
 
 export const routes = createBrowserRouter([
   {
@@ -160,14 +162,26 @@ export const routes = createBrowserRouter([
         element: <LecturesPage></LecturesPage>,
         loader: ({ params }) =>
           fetch(`http://localhost:5002/lecture/${params.lecture_id}`),
-      },
+      }
     ],
   },
   {
-    path: "/quiz/create",
+    path: "/quiz/create/:course_id",
     element : <CreateQuizPage></CreateQuizPage>,
     loader : ({params}) => 
-      fetch(`http://localhost:5002/courses/${params.id}`)
+      fetch(`http://localhost:5002/courses/${params.course_id}`)
+  },
+  {
+    path: "/take-quiz/:quiz_id",
+    element: <TakeQuiz></TakeQuiz>,
+    loader: ({ params }) =>///quiz/:quiz_id
+      fetch(`http://localhost:5002/quiz/${params.quiz_id}`),
+  },
+  {
+    path: "/take-quiz/:quiz_id",
+    element: <CorrectAnswersPage></CorrectAnswersPage>,
+    loader: ({ params }) =>///quiz/:quiz_id
+      fetch(`http://localhost:5002/quiz/${params.quiz_id}`),
   },
   {
     path: "*",

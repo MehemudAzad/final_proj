@@ -106,7 +106,7 @@ const ModalAddLessons = ({lessons, course}) => {
                 <div className="modal-action flex justify-end">
                 <form method="dialog">
                     {/* if there is a button, it will close the modal */}
-                    <button className="btn rounded-full absolute top-5 right-5"><span> X </span></button>
+                    <button className="btn rounded-full absolute top-5 right-5 px-5"><span> X </span></button>
                 </form>
                 
                 </div>
