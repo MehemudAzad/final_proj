@@ -7,6 +7,7 @@ import TeacherDashboard from "../../pages/Teacher/TeacherDashboard";
 const Header = () => {
   const { user, setUser } = useContext(AuthContext);
   console.log(user ? user : "null");
+  const imgUrl = user?.user_photo?.substring(6 + 1);
 
   //logout user
   const handleLogout = () => {
@@ -54,13 +55,11 @@ const Header = () => {
                         className="btn btn-ghost btn-circle avatar"
                       >
                         <div className="w-10 rounded-full">
-                          <img
-                            src={
-                              user?.photoURL
-                                ? user.photoURL
-                                : "https://w7.pngwing.com/pngs/96/435/png-transparent-world-chess-championship-pawn-chess-piece-chess-engine-cheess-game-king-queen-thumbnail.png"
-                            }
-                          />
+                          {
+                            user?.user_photo ?  <img src={`http://localhost:5002/${imgUrl}`} /> :  
+                            <img src="https://png.pngtree.com/png-vector/20210702/ourmid/pngtree-black-chess-pawn-png-image_3539520.jpg" />
+
+                          }
                         </div>
                       </label>
                     </div>

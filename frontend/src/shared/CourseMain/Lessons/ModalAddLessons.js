@@ -37,6 +37,7 @@ const ModalAddLessons = ({lessons, course}) => {
             const result = await response.json();
             console.log('Course added successfully. Course ID:', result.courseId);
             // Add any additional logic or UI updates here
+            window.location = `/courses/main/${course?.course_id}`
           } else {
             console.error('Failed to add course.');
           }
@@ -87,15 +88,17 @@ const ModalAddLessons = ({lessons, course}) => {
                 </label> 
                 <textarea className="textarea textarea-bordered h-24 bg-slate-200" name='description' placeholder="lesson description" required></textarea>
                 </div>
-                <div className="flex items-center gap-5 rounded-t-xl mt-">
+                <div className="rounded-t-xl mt-">
                 <label className="label">
-                    <span className="label-text text-blue-800">Add lesson pdf :</span>
-                    <span className="label-text-alt"></span>
+                    {/* <span className="label-text text-blue-800">Add lesson pdf :</span> */}
+                    {/* <span className="label-text-alt"></span> */}
                 </label> 
-                <label className="flex items-center flex-row-reverse hover:cursor-pointer">
-                  <input className="btn btn-primary flex items-center text-xl p-2 invisible" type="file"  onChange={handleFileChange} />
-                  <MdDriveFolderUpload className="text-3xl"/>
+                <label className="hover:cursor-pointer">
+                  {/* <input className="btn btn-primary flex items-center text-xl p-2 invisible" type="file"   /> */}
+                  <input type="file" className="file-input w-full mt-2" onChange={handleFileChange}/>
+                  {/* <MdDriveFolderUpload className="text-3xl"/> */}
                 </label>
+                
                   
                 </div>
                 <button type="submit" class="w-full inline-block px-6 py-2 border-2 mt-5 border-blue-800 text-xl text-blue-800 font-medium leading-normal uppercase rounded hover:bg-blue-800 hover:text-white  focus:outline-none focus:ring-0 transition duration-150 ease-in-out">
@@ -106,7 +109,7 @@ const ModalAddLessons = ({lessons, course}) => {
                 <div className="modal-action flex justify-end">
                 <form method="dialog">
                     {/* if there is a button, it will close the modal */}
-                    <button className="btn rounded-full absolute top-5 right-5"><span> X </span></button>
+                    <button className="btn rounded-full absolute top-5 right-5 px-5"><span> X </span></button>
                 </form>
                 
                 </div>

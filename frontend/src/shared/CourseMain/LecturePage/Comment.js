@@ -1,13 +1,24 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { BiLike } from "react-icons/bi";
 import { BiDislike } from "react-icons/bi";
+import { AuthContext } from '../../../context/AuthProvider';
 
 const Comment = ({cmnt}) => {
+    const {user} = useContext(AuthContext);
     const {comment_id, username, description} = cmnt;
+    console.log(cmnt?.user_photo)
+    const imgUrl = cmnt?.user_photo?.substring(6 + 1);
+
+    
+
     return (
-        <div className='bg-base-300 my-1 p-3 rounded-2xl'>
+        <div className='bg-base-200 my-2 p-2 rounded-xl'>
             <div className='flex gap-4'>
-            <img className='w-12 h-12 rounded-full' src="https://images.unsplash.com/photo-1529665253569-6d01c0eaf7b6?q=80&w=3370&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" />
+            {
+                            cmnt?.user_photo ?  <img className='size-10 rounded-full' src={`http://localhost:5002/${imgUrl}`} /> :  
+                            <img className='size-10 rounded-full' src="https://png.pngtree.com/png-vector/20210702/ourmid/pngtree-black-chess-pawn-png-image_3539520.jpg" />
+
+                          }
             <div>
             <h3 className=' text-xl'>{username}</h3>
             <p className='text-sm text-gray-600'>{description}</p>
@@ -19,7 +30,10 @@ const Comment = ({cmnt}) => {
                     <BiLike className='text-2xl mt-2 mr-2'/>
                     <BiDislike className='text-2xl mt-2'/>
                 </div>
-                <button className='btn btn-primary'>Delete</button>
+                {
+                    user?.id === cmnt?.user_id ?<><button className='btn btn-primary'>Delete</button></> : <></>
+                     
+                }
             </div>
         </div>
        

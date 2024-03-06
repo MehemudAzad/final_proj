@@ -7,6 +7,7 @@ import CourseFAQ from "./CourseFAQ";
 import { HiAcademicCap } from "react-icons/hi";
 import ReactPlayer from "react-player";
 import { ToastContainer, toast } from "react-toastify";
+import { PiStudentFill } from "react-icons/pi";
 
 const SingleCourse = () => {
   const course = useLoaderData();
@@ -78,6 +79,7 @@ const SingleCourse = () => {
       if (response.ok) {
         const enrollmentData = await response.json();
         console.log("Enrollment successful:", enrollmentData);
+        window.location = `/courses/main/${course_id}`;
         // Optionally, you can handle successful enrollment here, such as updating state or displaying a success message.
       } else {
         const errorData = await response.json();
@@ -126,13 +128,30 @@ const SingleCourse = () => {
             </div>
           </div>
           <div>
-            <img
+            {/* <img
               className="w-full transition-all duration-300 rounded-lg cursor-pointer filter hover:grayscale-0"
               src={
                 "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGNvbXB1dGVyfGVufDB8fDB8fHww"
               }
               alt=""
-            />
+            /> */}
+            {
+          course?.image_url ? 
+          <>
+            <img
+            className="w-full h-[500px] transition-all duration-300 rounded-lg cursor-pointer filter hover:grayscale-0"
+            src={course?.image_url}
+            alt="courses image"
+          />
+          </> : 
+          <><img
+          className="w-full h-[500px] transition-all duration-300 rounded-lg cursor-pointer filter hover:grayscale-0"
+          src={
+            "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGNvbXB1dGVyfGVufDB8fDB8fHww"
+          }
+          alt="courses image"
+        /></>
+        }
           </div>
           {/* image_url? image_url :  */}
         </div>

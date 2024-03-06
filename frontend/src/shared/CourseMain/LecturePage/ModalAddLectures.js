@@ -40,6 +40,7 @@ const ModalAddLectures = ({lectures, lesson_id}) => {
             const result = await response.json();
             console.log('Course added successfully. Course ID:', result.courseId);
             // Add any additional logic or UI updates here
+            window.location = `/lessons/${lesson_id}`
           } else {
             console.error('Failed to add course.');
           }

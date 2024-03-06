@@ -40,13 +40,24 @@ const Course = ({ course, handleDelete }) => {
     <div className="card rounded-lg flex flex-col card-side shadow-2xl bg-green-200 hover:bg-blue-200">
       <figure className="rounded-none">
         {/**image_url? image_url : */}
-        <img
+        {
+          course?.image_url ? 
+          <>
+            <img
+            className="h-[300px] rounded-t-lg z-100"
+            src={course?.image_url}
+            alt="courses image"
+          />
+          </> : 
+          <><img
           className="h-[300px] rounded-t-lg z-100"
           src={
             "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGNvbXB1dGVyfGVufDB8fDB8fHww"
           }
-          alt="courses"
-        />
+          alt="courses image"
+        /></>
+        }
+        
       </figure>
       <div className="card-body h-[300px] p-4">
         <h2 className="card-title text-3xl">{course_name}</h2>

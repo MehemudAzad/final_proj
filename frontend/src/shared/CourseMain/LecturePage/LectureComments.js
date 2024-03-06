@@ -40,6 +40,7 @@ const LectureComments = ({lecture}) => {
           })
           .then(data => {
             // console.log('File uploaded successfully:', data);
+            window.location = `/lessons/${lecture?.lesson_id}/lecture/${lecture?.lecture_id}`;
           })
           .catch(error => {
             console.error('Error uploading comment:', error);

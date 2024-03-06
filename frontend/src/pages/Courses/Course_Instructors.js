@@ -1,13 +1,21 @@
 import { isNull } from "lodash";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthProvider";
 
 const CourseInstructors = ({teacher}) => {
+    const {user} = useContext(AuthContext);
     const {email,  username, image_url} = teacher;
-
+    const imgUrl = teacher?.user_photo?.substring(7);
     return ( 
         <div className="m-auto bg-blue-300 px-40 border-solid my-1">
             <div className="flex gap-20 py-10">
                 <div className="w-[40%]">
-                    <img className="rounded-full w-80 h-80" src={"https://media.istockphoto.com/id/1322913815/photo/young-bearded-businessman-sitting-on-desk-and-posing.jpg?s=1024x1024&w=is&k=20&c=LL6lof_jAFsmPoGn_qRKEiEEFf9XATGm7aQMObT4Z4U="} alt="" />
+                {
+                            teacher?.user_photo ?  <img className="size-72 rounded-full" src={`http://localhost:5002/${imgUrl}`} /> :  
+                            <img className="size-72 rounded-full" src="https://png.pngtree.com/png-vector/20210702/ourmid/pngtree-black-chess-pawn-png-image_3539520.jpg" />
+
+                          }
+                         
                 </div>
                 <div className="w-[60%] text-left">
                     <h1 className="text-3xl text-left text-indigo-950 font-bold">{username}</h1>

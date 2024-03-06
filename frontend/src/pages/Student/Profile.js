@@ -24,7 +24,7 @@ const Profile = () => {
     username,
     email,
   } = user;
-  console.log(userInfo.user_photo);
+  console.log(userInfo?.user_photo);
   // console.log(user)
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -114,9 +114,9 @@ const Profile = () => {
                 className="tab-content bg-base-100 border-base-300 rounded-box p-6"
               >
                 <section>
-                  <h2 className="text-3xl">My courses </h2>
+                  <h2 className="text-3xl">My courses bought</h2>
                   <div>
-                    {courses.map((course) => (
+                    {courses?.map((course) => (
                       <CourseTeacherCard
                         key={course.course_id}
                         course={course}

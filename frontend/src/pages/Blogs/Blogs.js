@@ -15,12 +15,11 @@ const Blogs = () =>{
 
     
   return (
-    <div className='w-[90%] m-auto'>
+    <div className='bg-base-200 p-4'>
         <div className='text-4xl pb-5 text-black '>
-        <p className='text-indigo-600'> All blogs ( {blogs.length} )</p>
-       
+        <p className='text-indigo-600 pb-5'> All blogs ( {blogs.length} )</p>
       </div>
-        <div className='grid grid-cols-4 gap-10 bg-white  m-auto'>
+        <div className='grid grid-cols-3 gap-10  m-auto'>
         {
             blogs.map(blog => <Blog blog = {blog} ></Blog>)
         }

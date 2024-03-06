@@ -12,7 +12,7 @@ const SingleComment = ({ comment }) => {
     timeZone: "Asia/Dhaka", // Set the timezone to Bangladesh Standard Time
   };
   let date = "new Date();";
-
+  
   const { user } = useContext(AuthContext);
   const [author, setAuthor] = useState("");
   const [childAuthor, setChildAuthor] = useState("");
@@ -20,6 +20,7 @@ const SingleComment = ({ comment }) => {
   const [childComments, setChildComments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
+  const imgUrl = user?.user_photo?.substring(6 + 1);
   useEffect(() => {
     fetch(`http://localhost:5002/blog_comments_child/${comment.comment_id}`)
       .then((res) => res.json())
@@ -98,7 +99,7 @@ const SingleComment = ({ comment }) => {
             <div className="flex items-center font-bold">
               <img
                 className="rounded-full shadow-1-strong me-3 size-10"
-                src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(10).webp"
+                src={`http://localhost:5002/${imgUrl}`}
                 alt="avatar"
               />
               <p> {author.username}</p>

@@ -47,7 +47,7 @@ const CourseTeacherCard = ({course}) => {
                   {/* {
                     user?.teacher_id === course?.teacher_id ?
                     <>
-
+w
                         
                     </> : <>
                         <Link to={`/courses/${course_id}`}><button className="btn btn-primary text-xl">Explore</button></Link>

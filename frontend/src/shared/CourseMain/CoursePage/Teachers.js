@@ -73,7 +73,7 @@ const Teachers = ({course}) => {
                    {/* You can open the modal using document.getElementById('ID').showModal() method */}
                         <dialog id="my_modal_5" className="modal">
                         <div className="modal-box w-11/12 max-w-5xl h-[500px]">
-                            <h3 className="font-bold text-lg mb-3">Search for collaborators!</h3>
+                            <h3 className="font-bold text-lg mb-3 pt-10">Search for collaborators!</h3>
                              {/* take input  */}
                              <div className="flex items-center gap-4">
                              <input className="input w-full bg-gray-200"
@@ -108,7 +108,7 @@ const Teachers = ({course}) => {
                             <div className="modal-action">
                             <form method="dialog">
                                 {/* if there is a button, it will close the modal */}
-                                <button className="btn btn-primary">Close</button>
+                                <button className="btn bg-base-200 rounded-full absolute top-5 right-5">X</button>
                             </form>
                             </div>
                         </div>

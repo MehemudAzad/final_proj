@@ -7,6 +7,8 @@ const Comment = ({ blog }) => {
   const { user } = useContext(AuthContext);
   const [commentBody, setCommentBody] = useState("");
   const [comments, setComments] = useState([]);
+  const imgUrl = user?.user_photo?.substring(6 + 1);
+
   useEffect(() => {
     fetch(`http://localhost:5002/blog_comments/${blog.blog_id}`)
       .then((res) => res.json())
@@ -53,28 +55,11 @@ const Comment = ({ blog }) => {
 
   return (
     <div>
-      <div className="text-5xl ml-40  md-10 text-black"></div>
+      <div className="text-5xl ml-40  md-10 text-black w-full"></div>
       <section className="background-color: #eee">
-        <div className="container my-5 py-5">
+        <div className="my-5 py-5">
           <div className="row d-flex justify-content-center">
-            <div className="col-md-12 col-lg-10 col-xl-8">
-              <div className="card">
-                <div className="flex items-center bg-indigo-100 p-3">
-                  <a href="#!" className="me-3">
-                    <i className="far fa-thumbs-up me-2"></i>
-                    <p className="">Like</p>
-                  </a>
-                  <a href="#!" className=" me-3">
-                    <i className="far fa-comment-dots me-2"></i>
-                    <p className="">Comment</p>
-                  </a>
-                  <a href="#!" className="me-3">
-                    <i className="fas fa-share me-2"></i>
-                    <p className="">Share</p>
-                  </a>
-                </div>
-              </div>
-
+            <div className="">
               <div
                 className="card-footer py-3 border-0"
                 style={{ background: "#f8f9fa" }}
@@ -82,7 +67,7 @@ const Comment = ({ blog }) => {
                 <div className="flex items-center gap-4 w-[100%] p-3">
                   <img
                     className="rounded-full shadow-1-strong size-20"
-                    src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(19).webp"
+                    src={`http://localhost:5002/${imgUrl}`}
                     alt="avatar"
                   />
                   <div className="form-outline w-[100%]">

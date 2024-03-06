@@ -57,17 +57,19 @@ const CourseFiles = ({course}) => {
         }
         console.log('use effect called to many times')
     }, [course]);
-    const handleFile = async() => {
-        handleFileChange();
-        handleFileUpload();
-    }
+    // const handleFile = async() => {
+    //     handleFileChange();
+    //     handleFileUpload();
+    // }
     return ( 
         <div className="w-[90%]">
             <div className="gap-5">
-                <label>
-                    <input className="m-2" type="file" onChange={handleFileChange} />
-                </label>
-                    <button className="btn bg-blue-800 text-white hover:text-blue-800 hover:bg-base-100 hover:border-blue-800 mb-2 w-full" onClick={handleFileUpload}>Upload <FaPlusCircle /></button>
+              {
+                user?.role === "teacher" ? <><label>
+                <input className="mb-1 file-input w-full mb-2" type="file" onChange={handleFileChange} />
+            </label>
+                <button className="btn bg-blue-800 text-white hover:text-blue-800 hover:bg-base-100 hover:border-blue-800 mb-2 w-full" onClick={handleFileUpload}>Upload <FaPlusCircle /></button></> : <></>
+              }
             </div>
             <div className="py-1 px-3 rounded-b-md">
                 {

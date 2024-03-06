@@ -2,6 +2,8 @@ import { useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthProvider";
 import useTitle from "../../hooks/useTitle";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
   useTitle("Login");
@@ -10,8 +12,10 @@ const Login = () => {
   const location = useLocation();
   // .state?.from?
   const from = location.state?.from?.pathname || "/";
+  const notify = () => toast("Login successful");
 
   const handleSubmit = (event) => {
+    console.log("hello")
     event.preventDefault();
     const form = event.target;
     const password = form.password.value;
@@ -27,11 +31,11 @@ const Login = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data.user);
         setUser(data.user);
         localStorage.setItem("user", JSON.stringify(data.user));
+        console.log("dafdf")
+        notify();
       });
-
     //get jwt token
     // fetch('https://assignment-11-server-topaz.vercel.app/jwt', {
     //     method: 'POST',
@@ -54,6 +58,7 @@ const Login = () => {
 
   return (
     <div className="hero min-h-screen bg-indigo-200">
+        <ToastContainer />
       <div className="hero-content grid grid-cols-1 md:grid-cols-2 gap-[100px] lg:flex-row-reverse">
         <div className="text-center lg:text-left ">
           {/* <img className='w-[400px] shadow-2xl rounded-2xl' src="https://www.pngitem.com/pimgs/m/48-488412_transparent-game-piece-png-chess-pawn-png-png.png" alt="" /> */}
