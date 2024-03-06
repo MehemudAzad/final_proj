@@ -3,6 +3,7 @@ const cors = require("cors");
 const pool = require("./src/config/db");
 // const bcrypt = require('bcrypt');
 const multer = require("multer");
+const path = require('path');
 
 const port = process.env.PORT || 5002;
 const jwt = require("jsonwebtoken");
@@ -25,6 +26,7 @@ const storage = multer.diskStorage({
   },
 });
 
+app.use(express.static(path.join(__dirname, './public')));
 const upload = multer({ storage: storage });
 // //verifying jwt token
 // function verifyJWT(req, res, next){
@@ -377,7 +379,6 @@ async function run() {
     /*************************
      *  TEACHER
      *************************/
-    // http://localhost:5003/users/${username}
     app.get("/teachers/:username", async (req, res) => {
       const username = req.params.username;
 
@@ -385,11 +386,6 @@ async function run() {
         const query =
           "SELECT * FROM users WHERE username LIKE $1 AND id IN (SELECT user_id FROM teachers)";
         const result = await pool.query(query, [`%${username}%`]);
-
-        // if (result.rowCount === 0) {
-        //     // If no user found with the provided username
-        //     // return res.status(404).json({ message: 'No users found' });
-        // }
 
         // If users found, send the user data
         res.json(result.rows);
@@ -1019,6 +1015,161 @@ async function run() {
         console.error(err.message);
       }
     });
+
+    /*************************
+     *    QUIZ
+     *************************/
+    app.post("/add-Questions", async(req,res) =>{
+      try{
+        console.log("hello")
+        const {questions, lesson_id, time, creator_id, course_id} = req.body;
+        console.log(questions, lesson_id, time, creator_id);
+        if(questions.length < 1) return;
+
+        const query = `INSERT INTO quizzes (lesson_id, course_id, creator_id, time) VALUES ($1, $2, $3, $4) RETURNING *`;
+        const values = [lesson_id, course_id, creator_id, time];
+        const result = await pool.query(query, values);
+        const quiz_id = result.rows[0].quiz_id;
+        console.log(quiz_id);
+        await Promise.all(questions.map(async (question) => {
+          const query = `INSERT INTO questions (quiz_id, mark, option1, option2, option3, option4, correct_ans, question) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`;
+          const values = [quiz_id, question.mark, question.option1, question.option2, question.option3, question.option4, question.correct_ans, question.question];
+          await pool.query(query, values);
+      }));
+        // Send success response
+        res.status(200).json({ message: 'Questions inserted successfully' });  
+      }catch(error) {
+        console.error('Error inserting questions to database:', error);
+        res.status(500).json({ error: 'Internal server error' });
+      } 
+    })
+    //get the questions and all related information related to a quiz
+    app.get("/course/quiz/:course_id", async(req,res)=>{
+      try{
+        const course_id = req.params.course_id;
+        const queryResult = await pool.query(`
+        SELECT z.quiz_id, z.lesson_id, z.course_id, z.creator_id, z.time, COUNT(q.*) AS question_count
+        FROM quizzes z 
+        JOIN questions q ON(z.quiz_id = q.quiz_id)  
+        WHERE course_id = $1
+        GROUP BY z.quiz_id, z.lesson_id, z.course_id, z.creator_id, z.time`,
+        [course_id]);
+        res.json(queryResult.rows);
+      }catch(error) {
+        console.error("Error fetching quizes:", error);
+        res.status(500).send("Error fetching quizes");
+      }
+    
+    })
+    //post results for a student
+    app.post("/quiz/:quiz_id", async(req,res)=>{
+      console.log("inside quiz result post api")
+        try{
+          const quiz_id = req.params.quiz_id;
+          const {answers, marks, student_id} = req.body;
+          console.log(answers, marks, student_id)
+          const quizStudent = await pool.query(`INSERT INTO quiz_students (quiz_id, student_id, marks) VALUES ($1, $2, $3)`, [quiz_id, student_id, marks]);
+
+          await Promise.all(answers.map(async (answer) => {
+              const query = `INSERT INTO quiz_answers_student (quiz_id, student_id, question_id, answer) VALUES ($1, $2, $3, $4)`;
+              const values = [quiz_id, student_id, answer.question_id, answer.answer];
+              await pool.query(query, values);
+          }));
+
+        // Send success response
+        res.status(200).json({ message: 'Answers inserted successfully' });  
+        }catch(error) {
+          console.error("Error fetching quizess : ", error);
+          res.status(500).send("Error posting quiz results");
+        }
+    })
+
+    //display results for a student
+    app.get("/quiz/:course_id/:student_id", async(req,res)=>{
+      try{
+        const course_id = req.params.course_id;
+        const queryResult = await pool.query(`
+         `,
+        [course_id]);
+        res.json(queryResult.rows);
+      }catch(error) {
+        console.error("Error fetching quizes:", error);
+        res.status(500).send("Error fetching quizes");
+      }
+    })
+    //check if a student has taken a quiz
+    app.get('/quizTaken/:quizId/:studentId', async (req, res) => {
+        try {
+            const { quizId, studentId } = req.params;
+    
+            // Query the quiz_students table to check if the student has taken the quiz
+            const query = 'SELECT * FROM quiz_students WHERE quiz_id = $1 AND student_id = $2';
+            const { rows } = await pool.query(query, [quizId, studentId]);
+    
+            // If the query returns any rows, it means the student has taken the quiz
+            const hasTakenQuiz = rows.length > 0;
+    
+            res.status(200).json({ hasTakenQuiz });
+        } catch (error) {
+            console.error('Error checking if quiz is taken:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+    
+      //get the questions a student has answered and his marks
+      app.get('/quiz-answers/:quizId/:studentId', async (req, res) => {
+        try {
+            const { quizId, studentId } = req.params;
+    
+            // Query the quiz_students table to check if the student has taken the quiz
+            const query = `select * from quiz_answers_student a join questions q on (a.question_id = q.question_id)
+            where a.student_id = $1 and a.quiz_id = $2`;
+            const answersResult = await pool.query(query, [studentId, quizId]);
+
+            const marks = await pool.query(`select marks from quiz_students
+            where student_id = $1 and quiz_id = $2`, [studentId, quizId]) ;
+            // If the query returns any rows, it means the student has taken the quiz
+            res.json({answers : answersResult.rows , marks : marks.rows})
+        } catch (error) {
+            console.error('Error checking if quiz is taken:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+  
+    /*
+      //get questions of a quiz time 
+    */
+    app.get("/quiz/:quiz_id", async(req,res)=>{
+      try{
+        const quiz_id = req.params.quiz_id;
+        const quizResult = await pool.query(`
+        SELECT * 
+        FROM quizzes 
+        WHERE quiz_id = $1`,
+        [quiz_id]);
+
+
+        const questionsResult = await pool.query(`
+            SELECT * from questions 
+            WHERE quiz_id = $1
+        `, [quiz_id])
+        res.json({quiz : quizResult.rows[0], questions : questionsResult.rows});
+      }catch(error) {
+        console.error("Error fetching quizes:", error);
+        res.status(500).send("Error fetching quizes");
+      }
+    
+    })
+    //get total marks
+    app.get("/quiz-total-marks/:quiz_id", async (req, res) => {
+      const fetchQuery = `select sum(mark) 
+      from questions 
+      where quiz_id = $1
+      `;
+      const result = await pool.query(fetchQuery, [req.params.quiz_id]);
+      res.json(result.rows);
+      
+    });
     /**-=--=-=-=-=-=-=-=-=-
      * COURSE FILES STORAGE AND UPLOAD
     =-=--=-=-=-=-=-=-=-=-=*/
@@ -1278,6 +1429,7 @@ async function run() {
         console.error(err.message);
       }
     });
+    
 
     //get a specific blog
     app.get("/blogs/:id", async (req, res) => {

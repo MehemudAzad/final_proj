@@ -132,6 +132,7 @@ CREATE TABLE questions (
     question_id SERIAL PRIMARY KEY,
     quiz_id INT REFERENCES quizzes(quiz_id),
     mark INT,
+    question TEXT,
     option1 VARCHAR(255),
     option2 VARCHAR(255),
     option3 VARCHAR(255),
@@ -141,9 +142,9 @@ CREATE TABLE questions (
 
 --store answers here
 create table quiz_answers_student(
-	quiz_id int references quizzes(quiz_id),
-	student_id int references students(student_id),
-	question_id int references questions(question_id),
+	quiz_id int references quizzes(quiz_id) ON DELETE CASCADE,
+	student_id int references students(student_id) ON DELETE CASCADE,
+	question_id int references questions(question_id) ON DELETE CASCADE,
 	answer varchar(1000)
 )
 
@@ -185,3 +186,80 @@ VALUES ('Cybersecurity Advanced Topics', 'Explore advanced topics in cybersecuri
 --     job_profile VARCHAR(100),
 --     profession VARCHAR(100)
 -- );
+
+
+-- Add ON DELETE CASCADE constraint for course_id in course_student table
+ALTER TABLE course_student
+
+ADD FOREIGN KEY (course_id) REFERENCES courses(course_id) ON DELETE CASCADE;
+
+-- Add ON DELETE CASCADE constraint for student_id in course_student table
+ALTER TABLE course_student
+ADD FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE CASCADE;
+
+ALTER TABLE course_student
+DROP CONSTRAINT IF EXISTS course_student_course_id_fkey,
+ADD FOREIGN KEY (course_id) REFERENCES courses(course_id) ON DELETE CASCADE;
+
+
+ALTER TABLE quizzes
+DROP CONSTRAINT IF EXISTS quizzes_lesson_id_fkey,
+ADD CONSTRAINT quizzes_lesson_id_fkey FOREIGN KEY (lesson_id) 
+REFERENCES lessons(lesson_id) ON DELETE CASCADE;
+
+
+ALTER TABLE lessons
+DROP CONSTRAINT IF EXISTS lessons_course_id_fkey,
+ADD CONSTRAINT lessons_course_id_fkey FOREIGN KEY (course_id) 
+REFERENCES courses(course_id) ON DELETE CASCADE;
+
+ALTER TABLE lectures
+DROP CONSTRAINT IF EXISTS lectures_lesson_id_fkey,
+ADD CONSTRAINT lectures_lesson_id_fkey FOREIGN KEY (lesson_id) 
+REFERENCES lessons(lesson_id) ON DELETE CASCADE;
+
+
+ALTER TABLE comment_lecture
+DROP CONSTRAINT IF EXISTS comment_lecture_lecture_id_fkey,
+ADD CONSTRAINT comment_lecture_lecture_id_fkey FOREIGN KEY (lecture_id) 
+REFERENCES lectures(lecture_id) ON DELETE CASCADE;
+
+
+
+ALTER TABLE quiz_students
+DROP CONSTRAINT IF EXISTS quiz_students_quiz_id_fkey,
+ADD CONSTRAINT quiz_students_quiz_id_fkey FOREIGN KEY (quiz_id) 
+REFERENCES quizzes(quiz_id) ON DELETE CASCADE;
+
+ALTER TABLE questions
+DROP CONSTRAINT IF EXISTS questions_quiz_id_fkey,
+ADD CONSTRAINT questions_quiz_id_fkey FOREIGN KEY (quiz_id) 
+REFERENCES quizzes(quiz_id) ON DELETE CASCADE;
+
+
+ALTER TABLE teachers
+DROP CONSTRAINT IF EXISTS teachers_user_id_fkey,
+ADD CONSTRAINT teachers_user_id_fkey FOREIGN KEY (user_id) 
+REFERENCES users(id) ON DELETE CASCADE;
+
+ALTER TABLE course_teacher
+DROP CONSTRAINT IF EXISTS course_teacher_course_id_fkey,
+ADD CONSTRAINT course_teacher_course_id_fkey FOREIGN KEY (course_id) 
+REFERENCES courses(course_id) ON DELETE CASCADE;
+
+
+ALTER TABLE students
+DROP CONSTRAINT IF EXISTS students_user_id_fkey,
+ADD CONSTRAINT students_user_id_fkey FOREIGN KEY (user_id) 
+REFERENCES users(id) ON DELETE CASCADE;
+
+
+ALTER TABLE course_teacher
+DROP CONSTRAINT IF EXISTS course_teacher_teacher_id_fkey,
+ADD CONSTRAINT course_teacher_teacher_id_fkey FOREIGN KEY (teacher_id) 
+REFERENCES teachers(teacher_id) ON DELETE CASCADE;
+
+ALTER TABLE questions
+DROP CONSTRAINT IF EXISTS questions_quiz_id_fkey,
+ADD CONSTRAINT questions_quiz_id_fkey FOREIGN KEY (quiz_id)
+REFERENCES quizzes(quiz_id) ON DELETE CASCADE;
