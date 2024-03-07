@@ -118,7 +118,7 @@ const Settings = () => {
                 </label> 
                 <textarea className="textarea textarea-bordered h-24 bg-slate-200" name='profession' placeholder="write something about your job" required></textarea>
                 </div>
-                <button type="submit" class="w-full inline-block px-6 py-2 border-2 mt-5 border-blue-600 text-xl text-blue-600 font-medium leading-normal uppercase rounded hover:bg-blue-500 hover:text-white  focus:outline-none focus:ring-0 transition duration-150 ease-in-out">
+                <button type="submit" class="w-full inline-block px-6 py-2 border-2 mt-5 border-blue-800 text-xl text-blue-600 font-medium leading-normal uppercase rounded hover:bg-blue-800 hover:text-white  focus:outline-none focus:ring-0 transition duration-150 ease-in-out">
                     Save Changes
                 </button>
                 </form>

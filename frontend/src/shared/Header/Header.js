@@ -69,7 +69,7 @@ const Header = () => {
                     >
                       <li>
                         {user?.role === "student" ? (
-                          <Link to={`/student/profile/${user?.id}`}>
+                          <Link to={`/student/profile/${user?.student_id}`}>
                             Profile
                           </Link>
                         ) : (
