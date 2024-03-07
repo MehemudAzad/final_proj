@@ -39,9 +39,18 @@ CREATE TABLE courses (
     course_description TEXT,
     course_price NUMERIC(10, 2),
     total_lectures INT,
+    teacher_id INT references teachers(teacher_id),
     duration VARCHAR(50),
-    image_url VARCHAR(255)
+    image_url VARCHAR(1000),
+    category,
+    course_status,
+    course_type VARCHAR(255),--
 );
+
+
+const types = ["Live", "Free", "Self-Paced", "Classroom"];
+  const options = ["Web Development", "DS & Algorithms", "Programming Languages", "Machine Learning","Interview & Placement", "Data Science"]
+course_status = APPROVED
 
 CREATE TABLE course_student (
     course_id SERIAL REFERENCES courses(course_id),
@@ -263,3 +272,91 @@ ALTER TABLE questions
 DROP CONSTRAINT IF EXISTS questions_quiz_id_fkey,
 ADD CONSTRAINT questions_quiz_id_fkey FOREIGN KEY (quiz_id)
 REFERENCES quizzes(quiz_id) ON DELETE CASCADE;
+
+
+
+INSERT INTO courses (course_name, course_description, course_price, category, course_status, course_type, teacher_id)
+VALUES ('HTML & CSS Basics', 'Learn the fundamentals of HTML and CSS.', 19.99, 'Web Development', 'APPROVED', 'Live', 2);
+INSERT INTO course_teacher (course_id, teacher_id, status) VALUES (57, 2, 'APPROVED');
+
+INSERT INTO courses (course_name, course_description, course_price, category, course_status, course_type, teacher_id)
+VALUES ('JavaScript Essentials', 'Master JavaScript programming language.', 29.99, 'Web Development', 'APPROVED', 'Self-Paced', 3);
+INSERT INTO course_teacher (course_id, teacher_id, status) VALUES (58, 3, 'APPROVED');
+
+
+INSERT INTO courses (course_name, course_description, course_price, category, course_status, course_type, teacher_id)
+VALUES ('Data Structures in Python', 'Learn about data structures in Python.', 39.99, 'DS & Algorithms', 'APPROVED', 'Classroom', 4);
+INSERT INTO course_teacher (course_id, teacher_id, status) VALUES (59, 4, 'APPROVED');
+
+
+INSERT INTO courses (course_name, course_description, course_price, category, course_status, course_type, teacher_id)
+VALUES ('Advanced Machine Learning Techniques', 'Explore advanced machine learning concepts.', 49.99, 'Machine Learning', 'APPROVED', 'Live', 5);
+INSERT INTO course_teacher (course_id, teacher_id, status) VALUES (60, 5, 'APPROVED');
+
+INSERT INTO courses (course_name, course_description, course_price, category, course_status, course_type, teacher_id)
+VALUES ('Java Programming Masterclass', 'Become an expert in Java programming.', 59.99, 'Programming Languages', 'APPROVED', 'Self-Paced', 7);
+INSERT INTO course_teacher (course_id, teacher_id, status) VALUES (61, 7, 'APPROVED');
+
+
+INSERT INTO courses (course_name, course_description, course_price, category, course_status, course_type, teacher_id)
+VALUES ('Data Analysis with Pandas', 'Learn data analysis using Pandas library.', 24.99, 'Data Science', 'APPROVED', 'Free', 2);
+INSERT INTO course_teacher (course_id, teacher_id, status) VALUES (62, 2, 'APPROVED');
+
+
+INSERT INTO courses (course_name, course_description, course_price, category, course_status, course_type, teacher_id)
+VALUES ('Python Django Web Development', 'Build web applications using Django framework.', 39.99, 'Web Development', 'APPROVED', 'Classroom', 3);
+INSERT INTO course_teacher (course_id, teacher_id, status) VALUES (63, 3, 'APPROVED');
+
+
+INSERT INTO courses (course_name, course_description, course_price, category, course_status, course_type, teacher_id)
+VALUES ('Algorithms & Data Structures in C++', 'Learn algorithms and data structures in C++.', 29.99, 'DS & Algorithms', 'APPROVED', 'Self-Paced', 4);
+INSERT INTO course_teacher (course_id, teacher_id, status) VALUES (64, 4, 'APPROVED');
+
+
+INSERT INTO courses (course_name, course_description, course_price, category, course_status, course_type, teacher_id)
+VALUES ('Deep Learning Fundamentals', 'Get started with deep learning.', 44.99, 'Machine Learning', 'APPROVED', 'Live', 5);
+INSERT INTO course_teacher (course_id, teacher_id, status) VALUES (65, 5, 'APPROVED');
+
+
+INSERT INTO courses (course_name, course_description, course_price, category, course_status, course_type, teacher_id)
+VALUES ('React.js Essentials', 'Master React.js for building interactive UIs.', 34.99, 'Web Development', 'APPROVED', 'Self-Paced', 7);
+INSERT INTO course_teacher (course_id, teacher_id, status) VALUES (66, 7, 'APPROVED');
+
+
+INSERT INTO courses (course_name, course_description, course_price, category, course_status, course_type, teacher_id)
+VALUES ('SQL Database Management', 'Learn SQL for database management.', 19.99, 'Programming Languages', 'APPROVED', 'Classroom', 2);
+INSERT INTO course_teacher (course_id, teacher_id, status) VALUES (67, 2, 'APPROVED');
+
+
+INSERT INTO courses (course_name, course_description, course_price, category, course_status, course_type, teacher_id)
+VALUES ('Artificial Intelligence Basics', 'Introduction to artificial intelligence.', 39.99, 'Machine Learning', 'APPROVED', 'Live', 3);
+INSERT INTO course_teacher (course_id, teacher_id, status) VALUES (68, 3, 'APPROVED');
+
+
+INSERT INTO courses (course_name, course_description, course_price, category, course_status, course_type, teacher_id)
+VALUES ('Node.js Web Development', 'Build web applications with Node.js.', 29.99, 'Web Development', 'APPROVED', 'Self-Paced', 4);
+INSERT INTO course_teacher (course_id, teacher_id, status) VALUES (69, 4, 'APPROVED');
+
+INSERT INTO courses (course_name, course_description, course_price, category, course_status, course_type, teacher_id)
+VALUES ('Python for Data Science', 'Learn Python for data science applications.', 24.99, 'Data Science', 'APPROVED', 'Free', 5);
+INSERT INTO course_teacher (course_id, teacher_id, status) VALUES (70, 5, 'APPROVED');
+
+INSERT INTO courses (course_name, course_description, course_price, category, course_status, course_type, teacher_id)
+VALUES ('Advanced JavaScript Concepts', 'Explore advanced JavaScript concepts.', 34.99, 'Web Development', 'APPROVED', 'Classroom', 7);
+INSERT INTO course_teacher (course_id, teacher_id, status) VALUES (71, 7, 'APPROVED');
+
+INSERT INTO courses (course_name, course_description, course_price, category, course_status, course_type, teacher_id)
+VALUES ('C# Programming Masterclass', 'Become proficient in C# programming.', 49.99, 'Programming Languages', 'APPROVED', 'Self-Paced', 2);
+INSERT INTO course_teacher (course_id, teacher_id, status) VALUES (72, 2, 'APPROVED');
+
+INSERT INTO courses (course_name, course_description, course_price, category, course_status, course_type, teacher_id)
+VALUES ('Computer Vision Fundamentals', 'Introduction to computer vision.', 29.99, 'Machine Learning', 'APPROVED', 'Live', 3);
+INSERT INTO course_teacher (course_id, teacher_id, status) VALUES (73, 3, 'APPROVED');
+
+INSERT INTO courses (course_name, course_description, course_price, category, course_status, course_type, teacher_id)
+VALUES ('Angular.js Essentials', 'Master Angular.js for building web apps.', 39.99, 'Web Development', 'APPROVED', 'Self-Paced', 4);
+INSERT INTO course_teacher (course_id, teacher_id, status) VALUES (74, 4, 'APPROVED');
+
+INSERT INTO courses (course_name, course_description, course_price, category, course_status, course_type, teacher_id)
+VALUES ('R Programming for Data Analysis', 'Learn R programming for data analysis.', 24.99, 'Data Science', 'APPROVED', 'Free', 5);
+INSERT INTO course_teacher (course_id, teacher_id, status) VALUES (75, 5, 'APPROVED');

@@ -1020,16 +1020,102 @@ async function run() {
         console.error(err.message);
       }
     });
+    // app.get("/courses/search", async (req, res) => {
+    //   const searchTerm = req.query.q;
+
+    //   try {
+    //     const result = await pool.query(
+    //       `SELECT * FROM courses WHERE LOWER(course_name) LIKE $1 AND course_status = 'APPROVED'`,
+    //       [`%${searchTerm.toLowerCase()}%`]
+    //     );
+
+    //     res.json(result.rows);
+    //   } catch (error) {
+    //     console.error("Error executing search query:", error);
+    //     res.status(500).json({ error: "Internal Server Error" });
+    //   }
+    // });
+
     app.get("/courses/search", async (req, res) => {
       const searchTerm = req.query.q;
-
+      const category = req.query.category || ""; // Get the category from the query string or default to empty string if not provided
+    
       try {
         const result = await pool.query(
-          `SELECT * FROM courses WHERE LOWER(course_name) LIKE $1 AND course_status = 'APPROVED'`,
-          [`%${searchTerm.toLowerCase()}%`]
+          `SELECT * FROM courses WHERE LOWER(course_name) LIKE $1 AND course_status = 'APPROVED' AND category = $2`,
+          [`%${searchTerm.toLowerCase()}%`, category]
         );
-
+    
         res.json(result.rows);
+      } catch (error) {
+        console.error("Error executing search query:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
+    });
+
+    app.get("/courses/category/search/:category", async (req, res) => {
+      const searchTerm = req.params.category;
+      console.log(searchTerm)
+      try {
+        if(searchTerm == "All") {
+          const result = await pool.query(
+            `SELECT * 
+                  FROM courses 
+                  WHERE course_status = 'APPROVED'`
+          );
+          res.json(result.rows);
+        }else {
+          const result = await pool.query(
+            `SELECT * FROM courses WHERE LOWER(category) = $1 AND course_status = 'APPROVED'`,
+            [searchTerm.toLowerCase()]
+          );
+          res.json(result.rows);
+        }
+        
+      } catch (error) {
+        console.error("Error executing search query:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
+    });
+    // /courses/category/search/${category}/${type}
+    app.get("/courses/category/search/:category/:type", async (req, res) => {
+      const category = req.params.category;
+      const type = req.params.type;
+      console.log(category, type);
+      // console.log(searchTerm)
+      try {
+        if(type == "All") {
+          if(category == "All") {
+            const result = await pool.query(
+              `SELECT * 
+                    FROM courses 
+                    WHERE course_status = 'APPROVED'`
+            );
+            res.json(result.rows);
+          }else {
+            const result = await pool.query(
+              `SELECT * FROM courses WHERE LOWER(category) = $1 AND course_status = 'APPROVED'`,
+              [category.toLowerCase()]
+            );
+            res.json(result.rows);
+          }
+        }else {
+          if(category == "All") {
+            const result = await pool.query(
+              `SELECT * 
+                    FROM courses 
+                    WHERE course_status = 'APPROVED' AND LOWER(course_type) = $1`,[type.toLowerCase()]
+            );
+            res.json(result.rows);
+          }else{
+            const result = await pool.query(
+              `SELECT * FROM courses WHERE LOWER(category) = $1 AND LOWER(course_type) = $2 AND course_status = 'APPROVED'`,
+              [category.toLowerCase(), type.toLowerCase()]
+            );
+            res.json(result.rows);
+          }
+        }
+        
       } catch (error) {
         console.error("Error executing search query:", error);
         res.status(500).json({ error: "Internal Server Error" });
@@ -1081,10 +1167,11 @@ async function run() {
           category,
           duration,
           image_url,
+          type
         } = req.body;
         const course_status = "PENDING";
         const newCourse = await pool.query(
-          "INSERT INTO courses (course_name, course_description, course_price, duration, image_url, course_status, teacher_id, category) VALUES($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *",
+          "INSERT INTO courses (course_name, course_description, course_price, duration, image_url, course_status, teacher_id, category, course_type) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *",
           [
             course_name,
             course_description,
@@ -1094,6 +1181,7 @@ async function run() {
             course_status,
             teacher_id,
             category,
+            type
           ]
         );
         res.json(newCourse.rows[0]);
@@ -1102,6 +1190,72 @@ async function run() {
       }
     });
 
+
+
+
+    app.get("/homepage", async (req, res) => {
+      try {
+        const result = await pool.query(
+          `WITH T AS (
+              select course_id, count(student_id) AS total_students
+              from course_student 
+              GROUP BY course_id 
+              ORDER BY total_students DESC  
+              LIMIT 3
+            )
+
+            SELECT c.*, t.total_students
+            from courses c join T t on c.course_id = t.course_id
+             
+            `
+        );
+        res.json(result.rows);
+      } catch (err) {
+        console.error(err.message);
+      }
+    });
+
+
+    //get algorithm courses for homepage 
+
+    app.get('/homepage/algorithm', async (req, res) => {
+      try {
+        const result = await pool.query(
+          `
+          select * 
+          from courses 
+          where category = 'DS & Algorithms' and course_status = 'APPROVED'; 
+          
+          `
+        );
+        res.json(result.rows);
+
+      } catch (err) {
+        console.log(err);
+      }
+
+    });
+
+
+
+    //get machine learning courses for my website 
+    app.get('/homepage/machinelearning', async (req, res) => {
+      try {
+        const result = await pool.query(
+          `
+          select * 
+          from courses 
+          where category = 'Machine Learning' and course_status = 'APPROVED'; 
+          
+          `
+        );
+        res.json(result.rows);
+
+      } catch (err) {
+        console.log(err);
+      }
+
+    });
     /*************************
      *    QUIZ
      *************************/
