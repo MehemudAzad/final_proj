@@ -75,6 +75,7 @@ async function run() {
       }
     });
 
+
     //approve a course
     app.put("/courses/approve/:id", async (req, res) => {
       try {
@@ -98,8 +99,8 @@ async function run() {
       }
     });
 
-    //decline a course
 
+    //decline a course
     app.delete("/courses/decline/:id", async (req, res) => {
       try {
         const { id } = req.params;
@@ -115,7 +116,6 @@ async function run() {
     /*************************
      *    Authentication
      *************************/
-    // Endpoint to handle PATCH request to update data in users and teachers tables
     // Endpoint to handle PATCH request to update data in users and teachers tables
     app.patch("/update/teacherProfile/:userId/:teacherId", async (req, res) => {
       console.log("hello");
@@ -175,8 +175,8 @@ async function run() {
       }
     });
 
+
     app.post("/register", async (req, res) => {
-      dd;
       try {
         const { email, username, password } = req.body;
 
@@ -210,6 +210,7 @@ async function run() {
       }
     });
 
+
     // teacher registration
     app.post("/teacher-register", async (req, res) => {
       console.log("teacher-register");
@@ -240,6 +241,7 @@ async function run() {
         console.error(err.message);
       }
     });
+
 
     // Login API endpoint
     app.post("/login", async (req, res) => {
@@ -316,6 +318,7 @@ async function run() {
       }
     });
 
+
     /*************************
      *    User
      *************************/
@@ -328,6 +331,8 @@ async function run() {
         console.error(err.message);
       }
     });
+
+
     //get a particular user
     app.get("/users/:user_id", async (req, res) => {
       const user_id = req.params.user_id;
@@ -347,6 +352,8 @@ async function run() {
         res.status(500).json({ message: "Internal server error" });
       }
     });
+
+
      // Endpoint to handle PATCH request to update data in users and teachers tables
      app.patch("/update/Profile/:userId/:studentId", async (req, res) => {
       console.log("hello");
@@ -403,6 +410,8 @@ async function run() {
         });
       }
     });
+
+
     // Upload photo
     app.patch(
       "/upload/image/:user_id",
@@ -462,6 +471,8 @@ async function run() {
         res.status(500).send("Error fetching files");
       }
     });
+
+
     /*************************
      *  TEACHER
      *************************/
@@ -480,10 +491,11 @@ async function run() {
         res.status(500).json({ message: "Internal server error" });
       }
     });
+
+
     //get courses that teacher teaches
     app.get("/teacher-courses/:teacherId", async (req, res) => {
       const teacherId = req.params.teacherId;
-
       try {
         const result = await pool.query(
           "SELECT courses.* FROM courses " +
@@ -502,6 +514,7 @@ async function run() {
           .json({ success: false, message: "Internal server error" });
       }
     });
+
 
     // Endpoint to get teachers for a specific course
     app.get("/courses/teachers/:course_id", async (req, res) => {
@@ -526,6 +539,7 @@ async function run() {
         res.status(500).json({ error: "Internal Server Error" });
       }
     });
+
 
     //teacherInfo and courses he teacher for his profile page
     app.get("/user/teacher/:teacher_id", async (req, res) => {
@@ -575,6 +589,7 @@ async function run() {
       }
     });
 
+
     // Accept collaborator invitation
     app.post("/course/invite/accept", async (req, res) => {
       try {
@@ -595,19 +610,14 @@ async function run() {
       }
     });
 
-    //  // API endpoint to search for users by username
+
+    // API endpoint to search for users by username
     app.get("/users/search/:username", async (req, res) => {
       const username = req.params.username;
 
       try {
         const query = "SELECT * FROM users WHERE username LIKE $1";
         const result = await pool.query(query, [`%${username}%`]);
-
-        // if (result.rowCount === 0) {
-        //     // If no user found with the provided username
-        //     // return res.status(404).json({ message: 'No users found' });
-        // }
-
         // If users found, send the user data
         res.json(result.rows);
       } catch (error) {
@@ -615,6 +625,7 @@ async function run() {
         res.status(500).json({ message: "Internal server error" });
       }
     });
+
 
     // Approve collaborator
     app.post("/course/invite/approve", async (req, res) => {
@@ -637,6 +648,7 @@ async function run() {
       }
     });
 
+
     // invite collaborators
     app.post("/course/invite", async (req, res) => {
       try {
@@ -658,6 +670,8 @@ async function run() {
         res.status(500).json({ error: "Internal Server Error" });
       }
     });
+
+
     // invite collaborators
     app.get("/course-invite/:teacher_id", async (req, res) => {
       try {
@@ -724,32 +738,6 @@ async function run() {
     /*************************
      *    Lessons
      *************************/
-    // app.post("/upload", upload.single("file"), async (req, res) => {
-    //   const { originalname, path } = req.file;
-    //   const { user_id, project_id, commit_message } = req.body;
-    //   // Check if a file was provided
-    //   if (!req.file) {
-    //     return res.status(400).send("No file uploaded");
-    //   }
-    //   try {
-    //     const query =
-    //       "INSERT INTO submission (commit_id, user_id, project_id, file_path) VALUES ($1, $2, $3, $4, $5) RETURNING *";
-    //     const values = [
-    //       commitId,
-    //       user_id,
-    //       project_id,
-    //       req.file?.originalname,
-    //       req.file?.path,
-    //     ];
-
-    //     console.log("upload called");
-    //     const result = await pool.query(query, values);
-    //     res.status(200).send("File uploaded successfully");
-    //   } catch (error) {
-    //     console.error("Error uploading file:", error);
-    //     res.status(500).send("Error uploading file");
-    //   }
-    // });
     app.post("/lessons", upload.single("file"), async (req, res) => {
       try {
         const { title, lesson_description, teacher_id, course_id } = req.body;
@@ -789,6 +777,7 @@ async function run() {
       }
     });
 
+
     // get lessons for a course
     app.get("/lessons/:course_id", async (req, res) => {
       const course_id = req.params.course_id;
@@ -799,10 +788,6 @@ async function run() {
           "SELECT * FROM courses WHERE course_id = $1",
           [course_id]
         );
-
-        // if (teacherResult.rows.length === 0 || courseResult.rows.length === 0) {
-        //   return res.status(404).json({ error: 'Teacher or Course not found' });
-        // }
 
         // Fetch lessons based on teacher_id and course_id
         const fetchQuery = `
@@ -818,6 +803,7 @@ async function run() {
         res.status(500).json({ error: "Internal Server Error" });
       }
     });
+
 
     // get a particulat lesson for a course using lesson_id
     app.get("/lesson/:lesson_id", async (req, res) => {
@@ -836,25 +822,19 @@ async function run() {
       }
     });
 
+
     // delete a lesson from a course
-    app.delete("/lessons/:lesson_id", async (req, res) => {
-      const course_id = req.params.course_id;
+    app.delete('/delete-lessons/:lesson_id', async (req, res) => {
+      const lessonId = req.params.lesson_id;
+      console.log(lessonId);
       try {
-        const courseResult = await pool.query(
-          "SELECT * FROM courses WHERE lesson_id = $1",
-          [course_id]
-        );
-        const fetchQuery = `
-      DELETE FROM table_name
-      WHERE condition;
-    `;
-
-        const result = await pool.query(fetchQuery, [course_id]);
-
-        res.status(200).json(result.rows);
+        // Call the stored procedure to delete the lesson and related data
+        await pool.query('CALL delete_lessons($1)', [lessonId]);
+        
+        res.status(200).json({ message: 'Lesson deleted successfully.' });
       } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Internal Server Error" });
+        console.error('Error deleting lesson:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
       }
     });
 
@@ -884,6 +864,7 @@ async function run() {
         res.status(500).json({ error: "Internal Server Error" });
       }
     });
+
 
     // get lectures of a particular lesson
     app.get("/lectures/:lesson_id", async (req, res) => {
@@ -918,27 +899,8 @@ async function run() {
       }
     });
 
+
     //insert lectures
-    // app.post('/lecture/:lesson_id', async (req, res) => {
-    //   const lesson_id = req.params.lesson_id;
-    //   try {
-    //     const { video_link, pdf_note } = req.body;
-    //     // Insert the new lecture into the lectures table
-    //     const insertQuery = `
-    //       INSERT INTO lectures (lesson_id, video_link, pdf_note)
-    //       VALUES ($1, $2, $3)
-    //       RETURNING *;
-    //     `;
-
-    //     const result = await pool.query(insertQuery, [lesson_id, video_link, pdf_note]);
-
-    //     res.status(201).json(result.rows[0]);
-    //   } catch (error) {
-    //     console.error(error);
-    //     res.status(500).json({ error: 'Internal Server Error' });
-    //   }
-    // });
-
     app.post("/lecture", async (req, res) => {
       try {
         const { lesson_id, video_link, lecture_title } = req.body;
@@ -948,6 +910,22 @@ async function run() {
           [lesson_id, video_link, lecture_title]
         );
         res.json(newLecture.rows[0]);
+      } catch (err) {
+        console.error(err.message);
+      }
+    });
+
+
+     //delete lectures
+     app.delete("/delete-lecture/:lecture_id", async (req, res) => {
+      try {
+        const lecture_id  = req.params.lecture_id;
+        console.log("lecture delete " + lecture_id);
+        await pool.query(
+          "DELETE FROM lectures WHERE lecture_id = $1",
+          [lecture_id]
+        );
+        res.json({messsage : "course delete successfully"});
       } catch (err) {
         console.error(err.message);
       }
@@ -990,6 +968,7 @@ async function run() {
       }
     });
 
+
     app.post("/lecture-comment", async (req, res) => {
       console.log("okay");
       try {
@@ -1003,6 +982,30 @@ async function run() {
         console.error(err.message);
       }
     });
+
+    app.delete('/lecture-comment/:comment_id', async (req, res) => {
+      const commentId = req.params.comment_id;
+    
+      try {
+        // Check if the comment exists
+        const commentExistsQuery = 'SELECT * FROM comment_lecture WHERE comment_id = $1';
+        const commentExistsResult = await pool.query(commentExistsQuery, [commentId]);
+    
+        if (commentExistsResult.rows.length === 0) {
+          return res.status(404).json({ error: 'Comment not found' });
+        }
+    
+        // Delete the comment
+        const deleteCommentQuery = 'DELETE FROM comment_lecture WHERE comment_id = $1';
+        await pool.query(deleteCommentQuery, [commentId]);
+    
+        res.json({ message: 'Comment deleted successfully' });
+      } catch (error) {
+        console.error('Error deleting comment:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    });
+
 
     /*************************
      *    Courses
@@ -1020,21 +1023,7 @@ async function run() {
         console.error(err.message);
       }
     });
-    // app.get("/courses/search", async (req, res) => {
-    //   const searchTerm = req.query.q;
 
-    //   try {
-    //     const result = await pool.query(
-    //       `SELECT * FROM courses WHERE LOWER(course_name) LIKE $1 AND course_status = 'APPROVED'`,
-    //       [`%${searchTerm.toLowerCase()}%`]
-    //     );
-
-    //     res.json(result.rows);
-    //   } catch (error) {
-    //     console.error("Error executing search query:", error);
-    //     res.status(500).json({ error: "Internal Server Error" });
-    //   }
-    // });
 
     app.get("/courses/search", async (req, res) => {
       const searchTerm = req.query.q;
@@ -1052,6 +1041,7 @@ async function run() {
         res.status(500).json({ error: "Internal Server Error" });
       }
     });
+
 
     app.get("/courses/category/search/:category", async (req, res) => {
       const searchTerm = req.params.category;
@@ -1077,6 +1067,8 @@ async function run() {
         res.status(500).json({ error: "Internal Server Error" });
       }
     });
+
+
     // /courses/category/search/${category}/${type}
     app.get("/courses/category/search/:category/:type", async (req, res) => {
       const category = req.params.category;
@@ -1422,10 +1414,6 @@ async function run() {
         return res.status(400).send("No file uploaded");
       }
       try {
-        // const queryCommit = 'INSERT INTO files (course_id, user_id) VALUES ($1, $2, $3) RETURNING *';
-        // const valuesCommit = [course_i, commit_message, user_id];
-        // const resultCommit = await pool.query(queryCommit, valuesCommit);
-        // const commitId = resultCommit.rows[0].id;
 
         const query =
           "INSERT INTO files (teacher_id, course_id, file_name, file_path) VALUES ($1, $2, $3, $4) RETURNING *";
