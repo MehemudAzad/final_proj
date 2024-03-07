@@ -90,10 +90,10 @@ export const routes = createBrowserRouter([
           fetch(`http://localhost:5002/courses/${params.id}`),
       },
       {
-        path: "/student/profile/:id",
+        path: "/student/profile/:student_id",
         element: <Profile></Profile>,
         loader: ({ params }) =>
-          fetch(`http://localhost:5002/user/${params.id}`),
+          fetch(`http://localhost:5002/user/student/${params.student_id}`),
       },
       {
         path: "/teacher/profile/:teacher_id",

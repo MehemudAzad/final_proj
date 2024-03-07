@@ -104,7 +104,7 @@ const SingleComment = ({ comment }) => {
               <p> {author.username}</p>
             </div>
             <p className="mb-1">
-              <span className="small">- {comment.comment_date.toString()}</span>
+              {/* <span className="small">- {comment.comment_date.toString()}</span> */}
             </p>
           </div>
 

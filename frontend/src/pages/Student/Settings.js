@@ -22,37 +22,39 @@ const Settings = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const form = e.target;
+        console.log("heloo")
         const country = form.country.value;
-        const institution = form.institution.value;
+        const education = form.education.value;
         const city = form.city.value;
-        const bio = form.bio.value;
-        const experience = form.experience.value;
+        const profession = form.profession.value;
+        const job_profile = form.job_profile.value;
+        console.log(country, education, city, profession, job_profile, formattedDate);
         //date_of_birth, country, city, years_of_experience, institution, mentored_students, teacher_description
         // /update/:userId/:teacherId
         try {
             console.log(user?.teacher_id);
             
-          const response = await fetch(`http://localhost:5002/update/teacherProfile/${user?.id}/${user?.teacher_id}`, {
+          const response = await fetch(`http://localhost:5002/update/Profile/${user?.id}/${user?.student_id}`, {
             method: 'PATCH',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                institution: institution,
+                education: education,
                 country: country,
                 city: city,
-                teacher_description: bio,
+                profession : profession,
                 date_of_birth: selectedDate,
-                experience: experience
+                job_profile: job_profile
             }),
           });
           console.log({
-            institution: institution,
+            education : education, 
             country: country,
             city: city,
-            teacher_description: bio,
+            profession : profession,
             date_of_birth: selectedDate,
-            experience: experience
+            job_profile: job_profile
         })
           if (response.ok) {
             const result = await response.json();
@@ -88,18 +90,18 @@ const Settings = () => {
                     </div>
                 <div className="form-control w-full ">
                     <label className="label">
-                        <span className="label-text text-blue-500"><span className="text-red-500">*</span>Your Institution</span>
+                        <span className="label-text text-blue-500"><span className="text-red-500">*</span>Your Educational Institution</span>
                     </label>
-                    <input type="text" name='institution' placeholder="eg. BUET" className="input input-bordered w-full bg-slate-200"  required/>
+                    <input type="text" name='education' placeholder="eg. BUET" className="input input-bordered w-full bg-slate-200"  required/>
                     </div>
                 <div className="form-control w-full ">
                     <label className="label">
-                        <span className="label-text text-blue-500"><span className="text-red-500">*</span>Years of Experience</span>
+                        <span className="label-text text-blue-500"><span className="text-red-500">*</span>Job Profile</span>
                     </label>
-                    <input type="text" name='experience' placeholder="enter a number(your experience)" className="input input-bordered w-full bg-slate-200"  required/>
+                    <input type="text" name='job_profile' placeholder="enter a number(your experience)" className="input input-bordered w-full bg-slate-200"  required/>
                 </div>
                 {/* date picker  */}
-                <div className="form-control w-full ">
+                {/* <div className="form-control w-full ">
                     <label className="label">
                         <span className="label-text text-blue-500"><span className="text-red-500">*</span>What is your date of birth?</span>
                     </label>
@@ -108,13 +110,13 @@ const Settings = () => {
                         <div>|</div>
                         <DatePicker className="p-2 bg-slate-200" selected={selectedDate} dateFormat="MM-DD-YYYY" onChange={date=> setDate(date)}></DatePicker>
                     </label>
-                </div>
+                </div> */}
                 <div className="form-control">
                 <label className="label">
-                    <span className="label-text text-blue-500 ">Add Bio</span>
+                    <span className="label-text text-blue-500 ">Add Profession</span>
                     <span className="label-text-alt"></span>
                 </label> 
-                <textarea className="textarea textarea-bordered h-24 bg-slate-200" name='bio' placeholder="write something about yourself" required></textarea>
+                <textarea className="textarea textarea-bordered h-24 bg-slate-200" name='profession' placeholder="write something about your job" required></textarea>
                 </div>
                 <button type="submit" class="w-full inline-block px-6 py-2 border-2 mt-5 border-blue-600 text-xl text-blue-600 font-medium leading-normal uppercase rounded hover:bg-blue-500 hover:text-white  focus:outline-none focus:ring-0 transition duration-150 ease-in-out">
                     Save Changes
