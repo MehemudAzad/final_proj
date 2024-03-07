@@ -11,11 +11,8 @@ const AuthProvider = ({children}) => {
 
 
    useEffect(()=>{
-        const storedUser = localStorage.getItem('user');
-        if(storedUser && storedUser !== "undefined"){
-            console.log("storedUser : ",storedUser);
-            setUser(JSON.parse(storedUser));
-        }
+        setUser(JSON.parse(localStorage.getItem('user')));
+        console.log(user);
    },[])
 
 

@@ -5,14 +5,15 @@ import { IoLocation } from "react-icons/io5";
 import { BiSolidInstitution } from "react-icons/bi";
 import { GiTeacher } from "react-icons/gi";
 import { MdOutlineSystemUpdateAlt } from "react-icons/md";
-import Settings from "../Teacher/Settings";
+import Settings from "../Student/Settings";
 import { useLoaderData } from "react-router-dom";
-
+import CourseStudentCard from "./CourseStudentCard";
 const Profile = () => {
   const { user } = useContext(AuthContext);
   const data = useLoaderData();
   const courses = data.courses;
   const userInfo = data.user;
+  console.log(courses, userInfo);
   const [selectedFile, setSelectedFile] = useState(null);
   const {
     city,
@@ -25,6 +26,7 @@ const Profile = () => {
     email,
   } = user;
   console.log(userInfo?.user_photo);
+  const imgUrl = userInfo?.user_photo?.substring(6 + 1);
   // console.log(user)
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -64,7 +66,7 @@ const Profile = () => {
           <div className="w-100% h-[450px] m-auto static">
             <img
               className="rounded-full w-[400px] h-[400px] m-auto mt-6"
-              src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/d73f8e0e-5b18-4d3f-9f8b-6974faaacabe/dfob3av-a77403f6-ecb5-46f6-b1af-293220122d27.jpg/v1/fill/w_735,h_728,q_75,strp/cool_anime_boy__by_yash33455_dfob3av-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NzI4IiwicGF0aCI6IlwvZlwvZDczZjhlMGUtNWIxOC00ZDNmLTlmOGItNjk3NGZhYWFjYWJlXC9kZm9iM2F2LWE3NzQwM2Y2LWVjYjUtNDZmNi1iMWFmLTI5MzIyMDEyMmQyNy5qcGciLCJ3aWR0aCI6Ijw9NzM1In1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmltYWdlLm9wZXJhdGlvbnMiXX0.FKYWuMXxYmMBVTiFddI2O9eKApt_0I38DxpiV1fXWLA"
+              src={`http://localhost:5002/${imgUrl}`}
               alt=""
             />
             <label className="absolute bottom-[550px] left-[400px] cursor-pointer">
@@ -117,7 +119,7 @@ const Profile = () => {
                   <h2 className="text-3xl">My courses bought</h2>
                   <div>
                     {courses?.map((course) => (
-                      <CourseTeacherCard
+                      <CourseStudentCard
                         key={course.course_id}
                         course={course}
                       />
