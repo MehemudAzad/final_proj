@@ -116,15 +116,17 @@ async function run() {
      *    Authentication
      *************************/
     // Endpoint to handle PATCH request to update data in users and teachers tables
-    app.patch("/update/teacherProfile/:teacherId", async (req, res) => {
+    // Endpoint to handle PATCH request to update data in users and teachers tables
+    app.patch("/update/teacherProfile/:userId/:teacherId", async (req, res) => {
       console.log("hello");
       try {
         const { userId, teacherId } = req.params;
+        console.log(userId, teacherId);
         const {
           date_of_birth,
           country,
           city,
-          years_of_experience,
+          experience,
           institution,
           mentored_students,
           teacher_description,
@@ -133,7 +135,7 @@ async function run() {
           date_of_birth,
           country,
           city,
-          years_of_experience,
+          experience,
           institution,
           teacher_description
         );
@@ -152,7 +154,7 @@ async function run() {
                   mentored_students = COALESCE($3, mentored_students), teacher_description = COALESCE($4, teacher_description)
               WHERE teacher_id = $5`;
         const teacherUpdateValues = [
-          years_of_experience,
+          experience,
           institution,
           mentored_students,
           teacher_description,
@@ -345,7 +347,62 @@ async function run() {
         res.status(500).json({ message: "Internal server error" });
       }
     });
+     // Endpoint to handle PATCH request to update data in users and teachers tables
+     app.patch("/update/Profile/:userId/:studentId", async (req, res) => {
+      console.log("hello");
+      try {
+        const { userId, studentId } = req.params;
+        console.log(userId, studentId);
+        const {
+          date_of_birth,
+          country,
+          city,
+          education,
+          job_profile, 
+          profession 
+        } = req.body;
+        console.log(
+          date_of_birth,
+          country,
+          city,
+          education, 
+          job_profile,
+          profession
+        );
+        // Update user data
+        const userUpdateQuery = `
+              UPDATE users 
+              SET date_of_birth = COALESCE($1, date_of_birth), country = COALESCE($2, country), city = COALESCE($3, city)
+              WHERE id = $4`;
+        const userUpdateValues = [date_of_birth, country, city, userId];
+        await pool.query(userUpdateQuery, userUpdateValues);
 
+        // Update teacher data
+        const studentUpdateQuery = `
+              UPDATE students 
+              SET education = COALESCE($1, education), 
+                  job_profile = COALESCE($2, job_profile), profession = COALESCE($3, profession)
+              WHERE student_id = $4`;
+        const studentUpdateValues = [
+          education, 
+          job_profile,
+          profession,
+          studentId
+        ];
+        await pool.query(studentUpdateQuery, studentUpdateValues);
+
+        res.status(200).json({
+          success: true,
+          message: "User and teacher data updated successfully",
+        });
+      } catch (error) {
+        console.error("Error updating user and teacher data:", error);
+        res.status(500).json({
+          success: false,
+          message: "Error updating user and teacher data",
+        });
+      }
+    });
     // Upload photo
     app.patch(
       "/upload/image/:user_id",
@@ -375,7 +432,36 @@ async function run() {
         }
       }
     );
+    /*************************
+     *  Student
+    *************************/
+    //studentInfo and courses he student for his profile page
+    app.get("/user/student/:student_id", async (req, res) => {
+      try {
+        const student_id = req.params.student_id;
+        const query = `SELECT * 
+            FROM users U 
+            JOIN students S ON (U.id = S.user_id) 
+            WHERE S.student_id = $1`;
+        const values = [student_id];
+        const userResult = await pool.query(query, values);
 
+        console.log(userResult.rows[0]);
+
+        const query2 = `SELECT C.* 
+            FROM students S 
+            JOIN course_student CS ON ($1 = CS.student_id) 
+            JOIN courses C ON C.course_id = CS.course_id 
+            WHERE S.student_id = $1`;
+        const values2 = [student_id];
+        const coursesResult = await pool.query(query2, values2);
+        console.log(coursesResult.rows[0]);
+        res.json({ user: userResult.rows[0], courses: coursesResult.rows });
+      } catch (error) {
+        console.error("Error fetching files:", error);
+        res.status(500).send("Error fetching files");
+      }
+    });
     /*************************
      *  TEACHER
      *************************/
