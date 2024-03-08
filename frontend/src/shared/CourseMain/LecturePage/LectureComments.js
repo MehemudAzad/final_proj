@@ -40,6 +40,7 @@ const LectureComments = ({lecture}) => {
           })
           .then(data => {
             // console.log('File uploaded successfully:', data);
+            window.location = `/lessons/${lecture?.lesson_id}/lecture/${lecture?.lecture_id}`;
           })
           .catch(error => {
             console.error('Error uploading comment:', error);
@@ -48,6 +49,26 @@ const LectureComments = ({lecture}) => {
             getComments();
         }  
     }
+
+    // /lecture-comment/:comment_id
+     //delete operation
+    const handleDelete = (id) => {
+        console.log(id);
+        const proceed = window.confirm(
+        "Are you sure, you want to cancel this review"
+        );
+        if (proceed) {
+        fetch(`http://localhost:5002/lecture-comment/${id}`, {
+            method: "DELETE",
+        })
+            .then((res) => res.json())
+            .then((data) => {
+            console.log(data);
+            });
+        }
+        window.location = `/lessons/${lecture?.lesson_id}/lecture/${lecture?.lecture_id}`;
+    };
+
 
     console.log(comments)
     return (
@@ -86,7 +107,7 @@ const LectureComments = ({lecture}) => {
             <section>
                 {
                     comments?.map(cmnt => 
-                        <Comment key={cmnt?.comment_id} cmnt = {cmnt}></Comment>
+                        <Comment key={cmnt?.comment_id} cmnt = {cmnt} handleDelete={handleDelete}></Comment>
                     )
                 }
             </section>

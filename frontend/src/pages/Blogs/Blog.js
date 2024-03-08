@@ -3,16 +3,25 @@ import {Link} from 'react-router-dom';
 
 
 const Blog = ({ blog }) => {
+  const truncateText = (text, maxLength) => {
+    if (text.length <= maxLength) {
+      return text;
+    } else {
+      // Truncate the text to the nearest word within the specified length
+      const truncatedText = text.substr(0, text.lastIndexOf(" ", maxLength));
+      return `${truncatedText}...`;
+    }
+  };
 
     return (
         <div className='card rounded-lg flex flex-col card-side shadow-2xl bg-green-200 hover:bg-blue-200 mb-4'>
            <div className="card rounded-lg flex flex-col card-side shadow-2xl bg-green-200 hover:bg-blue-200">
           <figure className='rounded-none'>{/**image_url? image_url : */}
-            <img className="h-[300px] rounded-t-lg z-100" src={"https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGNvbXB1dGVyfGVufDB8fDB8fHww"}  alt="courses" />
+            <img className="h-[400px] rounded-t-lg z-100" src={"https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGNvbXB1dGVyfGVufDB8fDB8fHww"}  alt="courses" />
           </figure>
         <div className="card-body h-[300px] p-4">
-          <h2 className="card-title text-3xl">{blog.blog_id}</h2>
-          <p>{blog.blog_title}</p>
+          <h2 className="card-title text-3xl">{blog.blog_title}</h2>
+          <p>{truncateText(blog.blog_content, 300)}</p>
           <div className="flex card-action justify-between mt-5">
             {/* <UpdateCourse key={course_id} course = {course}/> */}
             {/* <button onClick={()=>handleDelete(course_id)} className="w-24 btn bg-blue-300 btn-primary">Delete</button> */}

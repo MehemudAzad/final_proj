@@ -19,12 +19,12 @@ const TeacherDashboard = () => {
     useEffect(()=>{
         const fetchData = async () => {
             try {
-                const response = await courseFinder.get(`/teacher-courses/${user.id}`)
+                const response = await courseFinder.get(`/teacher-courses/${user?.teacher_id}`)
                 // const data = await response.json();
                 console.log(response?.data?.courses)
                 setCoursesTeacher(response?.data?.courses);
             } catch (error) {
-
+                console.log('teacher dashboard : ' + error)
             }
         }
         fetchData()
@@ -40,10 +40,9 @@ const TeacherDashboard = () => {
             {/* your courses section  */}
             {/* display the tabs */}
             <div role="tablist" className="tabs tabs-lifted py-12">
-                <input type="radio" name="my_tabs_2" role="tab" className="tab text-2xl  [--tab-bg:bg-blue-200] [--tab-border-color:blue-200]" aria-label="My Courses" defaultChecked/>
+                <input type="radio" name="my_tabs_2" role="tab" className="tab text-xl  [--tab-bg:bg-blue-200] [--tab-border-color:blue-200]" aria-label="Courses" defaultChecked/>
                 <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
                     <section>
-                    <h2 className="text-3xl">My courses </h2>
                     <div className="w-[75%]">
                         {
                             coursesTeacher.map(course => 
@@ -55,12 +54,12 @@ const TeacherDashboard = () => {
                 </section>
                 </div>
 
-                <input type="radio" name="my_tabs_2" role="tab" className="tab text-2xl [--tab-bg:bg-blue-200] [--tab-border-color:blue-200]" aria-label="Add Courses" />
+                <input type="radio" name="my_tabs_2" role="tab" className="tab text-xl [--tab-bg:bg-blue-200] [--tab-border-color:blue-200]" aria-label="AddCourses" />
                 <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
                     <AddCourses></AddCourses>
                 </div>
 
-                <input type="radio" name="my_tabs_2" role="tab" className="tab text-2xl [--tab-bg:bg-blue-200] [--tab-border-color:blue-200]" aria-label="Earnings" />
+                <input type="radio" name="my_tabs_2" role="tab" className="tab text-xl [--tab-bg:bg-blue-200] [--tab-border-color:blue-200]" aria-label="Earnings" />
                 <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
                 
                 </div>

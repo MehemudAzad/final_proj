@@ -5,6 +5,11 @@ import LessonCard from "../Lessons/LessonCard";
 import AddLessons from "../Lessons/AddLessons";
 import Outline from "./Outline";
 import Teachers from "./Teachers";
+import CourseFiles from "./CourseFiles";
+import Quizes from "./Quizes";
+import ModalAddLessons from "../Lessons/ModalAddLessons";
+import StudentMarks from "./StudentMarks";
+import Rating from "./Rating";
 
 const CourseMain = () => {
     const course = useLoaderData();
@@ -26,13 +31,23 @@ const CourseMain = () => {
             .then(data =>setLessons(data))
     },[])  
 
-    // console.log(user?.username,user?.id)
-    // //loading the related teachers with this course
-    // useEffect(()=>{
-    //     fetch(`http://localhost:5002/courses/teachers/${course_id}`)
-    //     .then(res => res.json())
-    //     .then(data =>setTeachers(data.teachers))
-    // },[]);
+    const handleDelete = (id) => {
+        console.log(id);
+        const proceed = window.confirm(
+        "Are you sure, you want to cancel this review"
+        );
+        if (proceed) {
+        fetch(`http://localhost:5002/delete-lessons/${id}`, {
+            method: "DELETE",
+        })
+            .then((res) => res.json())
+            .then((data) => {
+            console.log(data);
+            });
+        }//http://localhost:3000/courses/main/46
+        window.location = `/courses/main/${course?.course_id}`;
+    };
+
 
     console.log(lessons);
 
@@ -63,47 +78,53 @@ const CourseMain = () => {
           }
     }
     return ( 
-        <div className="p-12">
-            <div className="mt-8">
-                <h1 className="text-5xl mb-8">{course_name}</h1>
+        <div className="p-6">
+            <div className="">
+                <h1 className="text-4xl pt-4 bg-">{course_name}</h1>
             </div>
             {/* 
                 add tabs here  
             */}
             <div role="tablist" className="tabs tabs-bordered mt-10">
-            <input type="radio" name="my_tabs_1" role="tab" className="tab text-2xl px-12" aria-label="Lessons" defaultChecked/>
+            <input type="radio" name="my_tabs_1" role="tab" className="tab text-xl mx-1 px-12" aria-label="LESSONS" defaultChecked/>
             <div role="tabpanel" className="tab-content p-10">
-                <h2 className="text-4xl">Lessons : {lessons.length}</h2>
+                <div>
+                    <ModalAddLessons lessons={lessons} course={course}></ModalAddLessons>
+                </div>
                 <section>
                     {
                         lessons.map(lesson => 
-                            <LessonCard key= {lesson?.lesson_id} lesson = {lesson}></LessonCard>    
+                            <LessonCard key= {lesson?.lesson_id} lesson = {lesson} handleDelete={handleDelete}></LessonCard>    
                         )
                     }
                 </section>
             </div>
-                   {
-                    user?.role === "teacher" ? 
-                    <>
-                        <input type="radio" name="my_tabs_1" role="tab" className="tab text-2xl px-12" aria-label="Add Lessons" />
-                        <div role="tabpanel" className="tab-content p-10">
-                            <AddLessons course={course}></AddLessons>
-                        </div>
-                    </>
-                    :
-                    <>
-                    </>
-                   } 
-            
-
-            <input type="radio" name="my_tabs_1" role="tab" className="tab text-2xl px-12" aria-label="Outline" />
+            <input type="radio" name="my_tabs_1" role="tab" className="tab text-xl mx-1 px-12" aria-label="OUTLINE" />
             <div role="tabpanel" className="tab-content p-10">
                 <Outline></Outline> 
             </div>
-            <input type="radio" name="my_tabs_1" role="tab" className="tab text-2xl px-12" aria-label="Teachers" />
+            <input type="radio" name="my_tabs_1" role="tab" className="tab text-xl mx-1 px-12" aria-label="MATERIALS" />
+            <div role="tabpanel" className="tab-content p-10">
+                <CourseFiles course={course}></CourseFiles> 
+            </div>
+            <input type="radio" name="my_tabs_1" role="tab" className="tab text-xl mx-1 px-12" aria-label="QUIZ" />
+            <div role="tabpanel" className="tab-content p-10">
+                <Quizes course={course}></Quizes> 
+            </div>
+            <input type="radio" name="my_tabs_1" role="tab" className="tab text-xl mx-1 px-12" aria-label="TEACHERS" />
             <div role="tabpanel" className="tab-content p-10">
                 <Teachers course={course}></Teachers>
             </div>
+            <input type="radio" name="my_tabs_1" role="tab" className="tab text-xl mx-1 px-12" aria-label="MARKS" />
+            <div role="tabpanel" className="tab-content p-10">
+                    <StudentMarks/>
+            </div>
+                {
+                    user?.role === "student" ? <><input type="radio" name="my_tabs_1" role="tab" className="tab text-xl mx-1 px-12" aria-label="Ratings" />
+                    <div role="tabpanel" className="tab-content p-10">
+                        <Rating course={course}></Rating>
+                    </div></> : <></>
+                }
             </div>
             
 
