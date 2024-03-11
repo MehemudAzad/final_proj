@@ -115,10 +115,6 @@ const CourseMain = () => {
             <div role="tabpanel" className="tab-content p-10">
                 <Teachers course={course}></Teachers>
             </div>
-            <input type="radio" name="my_tabs_1" role="tab" className="tab text-xl mx-1 px-12" aria-label="MARKS" />
-            <div role="tabpanel" className="tab-content p-10">
-                    <StudentMarks/>
-            </div>
                 {
                     user?.role === "student" ? <><input type="radio" name="my_tabs_1" role="tab" className="tab text-xl mx-1 px-12" aria-label="Ratings" />
                     <div role="tabpanel" className="tab-content p-10">
@@ -126,8 +122,6 @@ const CourseMain = () => {
                     </div></> : <></>
                 }
             </div>
-            
-
         </div>
      );
 }

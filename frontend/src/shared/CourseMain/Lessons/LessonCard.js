@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../../context/AuthProvider";
 import { GrFormEdit } from "react-icons/gr";
@@ -7,11 +7,21 @@ import { MdLibraryAdd } from "react-icons/md";
 const LessonCard = ({lesson, handleDelete}) => {
     const {user} = useContext(AuthContext);
     const {course_id, lesson_description, title,  lesson_id, teacher_id, } = lesson;
+    const [teacher, setTeacher] = useState([]);
     // /lessons/:lesson_id 
     const handleEditClick = (event) => {
         event.stopPropagation(); // Stop propagation to prevent click on Link
         document.getElementById('my_modal_6').showModal();
     }
+
+    useEffect(()=>{
+        fetch(`http://localhost:5002/teacher/${lesson_id}`)
+        .then(res => res.json())
+        .then(data => setTeacher(data))
+    },[]); 
+
+
+
     return ( 
         <>
          <dialog id="my_modal_6" className="modal">
@@ -48,24 +58,27 @@ const LessonCard = ({lesson, handleDelete}) => {
             </div>
             </dialog>
            
-        {/* <Link to={`/lessons/${lesson_id}`}> */}
+        <Link to={`/lessons/${lesson_id}`}>
             <div className="flex justify-between items-center border-l-8 border-indigo-500 hover:bg-blue-100 bg-indigo-50 mt-5 p-6 w-[75%] transition ease-in-out">
                 <div class="dark:bg-gray-800 dark:border-gray-700 ">
                         <h5 class="mb-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">{title}</h5>
                     <p class="mb-3 font-normal text-gray-700 text-md dark:text-gray-400">{lesson_description}</p>
+                    <p>Prepared By - <span className="text-blue-700 fond-bold">{teacher.username}</span></p>
+                    <p>Total lectures - {teacher.total_lectures}</p>
+
                 </div>
                 <div className="flex items-center gap-5">   
-                <div className="bg-indigo-200 hover:bg-neutral-700 hover:text-base-200 rounded-full p-5 w-20 h-20">   
                     {
                         user?.role === 'teacher' ? <>
+                        <div className="bg-indigo-200 hover:bg-neutral-700 hover:text-base-200 rounded-full p-5 w-20 h-20">   
                             <button onClick={handleEditClick} className="text-5xl">
                                 <GrFormEdit/>
                             </button>
+                        </div>
                         </>:
                         <>
                         </>
                     }
-                </div>
                 <div>
                 {
                     user?.role === 'teacher' ? <>
@@ -75,12 +88,9 @@ const LessonCard = ({lesson, handleDelete}) => {
                     </>
                 }
                 </div>
-                </div>
-                
-               
+                </div>               
             </div>
-           
-        {/* </Link> */}
+        </Link>
         
         </>
      );

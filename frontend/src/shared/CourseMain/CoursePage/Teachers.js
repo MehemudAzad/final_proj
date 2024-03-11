@@ -34,17 +34,17 @@ const Teachers = ({course}) => {
           setUsers(null);
         }
       };
- 
+    
       
     const handleInvitation = async (user_id) => {
         console.log('inside invite functino ' , user_id);
         try{
-            fetch('http://localhost:5003/project/invite', {
+            fetch('http://localhost:5002/course/invite', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({user_id : user_id, course_id :course?.course_id})
+            body: JSON.stringify({teacher_id : user_id, course_id :course?.course_id})
           })
           .then(response => {
             if (response.ok) {
@@ -98,7 +98,7 @@ const Teachers = ({course}) => {
                                       {/* Display other user data as needed */}
                                       <div className="modal-action">
                                         <form method="dialog">
-                                          <button onClick={()=>handleInvitation(user.id)} className="btn btn-primary">Invite</button>
+                                          <button onClick={()=>handleInvitation(user?.teacher_id)} className="btn btn-primary">Invite</button>
                                         </form>
                                       </div>
                                     </div>

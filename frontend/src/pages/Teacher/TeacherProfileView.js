@@ -8,6 +8,7 @@ import CourseTeacherCard from "./CourseTeacherCard";
 import { BiSolidInstitution } from "react-icons/bi";
 import Settings from "./Settings";
 import { MdOutlineSystemUpdateAlt } from "react-icons/md";
+import CourseStudentCard from "../Student/CourseStudentCard";
 
 const TeacherProfileView = () => {
   const { user } = useContext(AuthContext);
@@ -59,14 +60,14 @@ const TeacherProfileView = () => {
               src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/d73f8e0e-5b18-4d3f-9f8b-6974faaacabe/dfob3av-a77403f6-ecb5-46f6-b1af-293220122d27.jpg/v1/fill/w_735,h_728,q_75,strp/cool_anime_boy__by_yash33455_dfob3av-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NzI4IiwicGF0aCI6IlwvZlwvZDczZjhlMGUtNWIxOC00ZDNmLTlmOGItNjk3NGZhYWFjYWJlXC9kZm9iM2F2LWE3NzQwM2Y2LWVjYjUtNDZmNi1iMWFmLTI5MzIyMDEyMmQyNy5qcGciLCJ3aWR0aCI6Ijw9NzM1In1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmltYWdlLm9wZXJhdGlvbnMiXX0.FKYWuMXxYmMBVTiFddI2O9eKApt_0I38DxpiV1fXWLA"
               alt=""
             />
-            <label className="absolute bottom-[550px] left-[400px] cursor-pointer">
+            {/* <label className="absolute bottom-[550px] left-[400px] cursor-pointer">
               <MdOutlineSystemUpdateAlt className="text-3xl" />
               <input
                 className="hidden"
                 type="file"
                 onChange={handleFileChange}
               />
-            </label>
+            </label> */}
           </div>
           <div className="p-5">
             <h2 className="flex items-center gap-3 text-3xl">

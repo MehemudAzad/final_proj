@@ -8,12 +8,15 @@ import { HiAcademicCap } from "react-icons/hi";
 import ReactPlayer from "react-player";
 import { ToastContainer, toast } from "react-toastify";
 import { PiStudentFill } from "react-icons/pi";
+// import CourseRating from "./CourseRating";
+import Course from "./Course";
+import { Link } from "react-router-dom";
 import CourseRating from "../../components/CourseRating";
-// import CourseRating from "../../components/CourseRating";
 
 const SingleCourse = () => {
   const course = useLoaderData();
   const [isClicked, setIsClicked] = useState(false);
+  const [rating, setRating] = useState(0); // Initial rating state
   const { user } = useContext(AuthContext);
   const {
     course_id,
@@ -25,6 +28,8 @@ const SingleCourse = () => {
   const user_id = user?.id;
   const [teachers, setTeachers] = useState([]);
   const [enrolled, setEnrolled] = useState(0);
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  const [isTeached, setIsTeached] = useState(false);
 
   const notify = () =>
     toast("🦄 Wow so easy!", {
@@ -62,6 +67,19 @@ const SingleCourse = () => {
       .then((res) => res.json())
       .then((data) => setEnrolled(data[0]?.total_enrolled));
   }, []);
+
+  useEffect(() => {
+    fetch(`http://localhost:5002/already-enrolled/${course_id}/${user?.student_id}`)
+      .then(res => res.json())
+      .then(data => setIsEnrolled(data.enrolled))
+  })
+
+  useEffect(() => {
+    fetch(`http://localhost:5002/already-teached/${course_id}/${user?.teacher_id}`)
+      .then(res => res.json())
+      .then(data => setIsTeached(data.teached))
+  })
+
 
   console.log(teachers);
   const handleClick = () => {
@@ -111,28 +129,61 @@ const SingleCourse = () => {
             <h2 className="text-2xl text-blue-900 font-bold my-3">
               {enrolled} Students enrolled{" "}
             </h2>
-            <CourseRating course_id = {course_id}></CourseRating>
-            <div>
-            <h2 className="text-2xl text-blue-900 font-bold my-3">{course?.course_type}</h2>
-            <h2 className="text-2xl text-blue-900 font-bold my-3">{course?.category}</h2>
-            </div>
-           
+            <h2 className="text-2xl text-blue-900 font-bold my-3">
+              <span className="text-yellow-400">{course?.course_type}</span>  |  <span className="text-rose-400">{course?.category}</span>
+            </h2>
+            <CourseRating course_id={course_id} />
             <p className="my-4">{truncateText(course_description, 400)}</p>
-            <div>
-              {user?.role === "student" ? (
-                <PrivateRoute>
-                  <button
-                    onClick={handleCombinedClick}
-                    disabled={isClicked}
-                    className="btn text-3xl btn-success bg-emerald-700 text-slate-100  w-[45%] absolute bottom-28 left-0"
-                  >
-                    Enroll
-                  </button>
-                </PrivateRoute>
-              ) : (
-                <></>
-              )}
-            </div>
+
+            {
+              user?.role === "student" ? (
+                <>
+                  {
+                    isEnrolled === false ? (
+                      <>
+                        <PrivateRoute>
+                          <button
+                            onClick={handleCombinedClick}
+                            disabled={isClicked}
+                            className="btn text-3xl btn-success bg-emerald-700 text-slate-100  w-[45%] absolute bottom-28 left-0"
+                          >
+                            Enroll
+                          </button>
+                        </PrivateRoute>
+                      </>
+                    )
+                      :
+                      (
+                        <>
+                          <div className="flex items-center gap-5">
+                            <Link to={`/courses/main/${course_id}`}><button className="btn text-3xl btn-success bg-emerald-700 text-slate-100  w-[45%] absolute bottom-28 left-0">Learn</button></Link>
+                          </div>
+                        </>
+                      )
+                  }
+                </>
+
+              ) :
+                (
+                  <>
+                    {
+                      isTeached === true ?
+                        (
+                          <>
+                            <div className="flex items-center gap-5">
+                              <Link to={`/courses/main/${course_id}`}><button className="btn text-3xl btn-success bg-emerald-700 text-slate-100  w-[45%] absolute bottom-28 left-0">Teach</button></Link>
+                            </div>
+                          </>
+                        ) :
+                        (
+                          <>
+                          </>
+                        )
+                    }
+                  </>
+                )
+            }
+
           </div>
           <div>
             {/* <img
@@ -143,22 +194,22 @@ const SingleCourse = () => {
               alt=""
             /> */}
             {
-          course?.image_url ? 
-          <>
-            <img
-            className="w-full h-[500px] transition-all duration-300 rounded-lg cursor-pointer filter hover:grayscale-0"
-            src={course?.image_url}
-            alt="courses image"
-          />
-          </> : 
-          <><img
-          className="w-full h-[500px] transition-all duration-300 rounded-lg cursor-pointer filter hover:grayscale-0"
-          src={
-            "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGNvbXB1dGVyfGVufDB8fDB8fHww"
-          }
-          alt="courses image"
-        /></>
-        }
+              course?.image_url ?
+                <>
+                  <img
+                    className="w-full h-[500px] transition-all duration-300 rounded-lg cursor-pointer filter hover:grayscale-0"
+                    src={course?.image_url}
+                    alt="courses image"
+                  />
+                </> :
+                <><img
+                  className="w-full h-[500px] transition-all duration-300 rounded-lg cursor-pointer filter hover:grayscale-0"
+                  src={
+                    "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGNvbXB1dGVyfGVufDB8fDB8fHww"
+                  }
+                  alt="courses image"
+                /></>
+            }
           </div>
           {/* image_url? image_url :  */}
         </div>
