@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const pool = require("./src/config/db");
+const cron = require("node-cron");
 // const bcrypt = require('bcrypt');
 const multer = require("multer");
 const path = require('path');
@@ -45,6 +46,20 @@ const upload = multer({ storage: storage });
 //         next();
 //     })
 // }
+
+cron.schedule('* 17 * * *', async function () {
+  try {
+      const deletionThreshold = new Date(new Date().getTime() - 3 * 24 * 60 * 60 * 1000);
+      const result = await pool.query(`SELECT course_id FROM courses WHERE ondelete = 'YES' and deletion_timestamp <= $1`, [deletionThreshold]);
+      console.log('In the scheduler');
+      for (const row of result.rows) {
+          console.log('Deleting course with ID:', row.course_id);
+          await pool.query('CALL course_delete($1)', [row.course_id]);
+      }
+  } catch (err) {
+      console.error('Error in scheduler:', err);
+  }
+});
 
 async function run() {
   try {
@@ -113,6 +128,158 @@ async function run() {
         console.error(err.message);
       }
     });
+
+
+    app.get("/course-statistics", async (req, res) => {
+      try {
+          // Call the stored function to retrieve course statistics
+          const { rows } = await pool.query('SELECT get_course_statistics() AS course_statistics');
+          
+          // Extract the JSONB result from the row
+          const courseStatistics = rows[0].course_statistics;
+
+          // Send the course statistics JSONB response
+          res.status(200).json(courseStatistics);
+      } catch (error) {
+          console.error("Error fetching course statistics:", error);
+          res.status(500).json({ error: "Internal server error" });
+      }
+    });
+
+
+    // Assuming you have required pool from your database connection somewhere in your code
+
+    app.get("/course-statistics/category", async (req, res) => {
+      try {
+          // Call the stored function to retrieve course statistics
+          const { rows } = await pool.query('SELECT get_course_statistics_by_category() AS course_statistics');
+          
+          // Extract the JSONB result from the row
+          const courseStatistics = rows[0].course_statistics;
+
+          // Send the course statistics JSONB response
+          res.status(200).json(courseStatistics);
+      } catch (error) {
+          console.error("Error fetching course statistics:", error);
+          res.status(500).json({ error: "Internal server error" });
+      }
+    });
+//grid-rows-3
+    app.get("/course-statistics/type", async (req, res) => {
+      try {
+          // Call the stored function to retrieve course statistics
+          const { rows } = await pool.query('SELECT get_course_statistics_by_type() AS course_statistics');
+          
+          // Extract the JSONB result from the row
+          const courseStatistics = rows[0].course_statistics;
+
+          // Send the course statistics JSONB response
+          res.status(200).json(courseStatistics);
+      } catch (error) {
+          console.error("Error fetching course statistics:", error);
+          res.status(500).json({ error: "Internal server error" });
+      }
+    });
+
+    /**************
+     * 
+     * endpoint for getting teachers, their reviews and ratings 
+     */
+    app.get('/teacher/allInfo/:teacher_id', async (req, res) => {
+
+      try {
+        const teacher_id = req.params.teacher_id;
+        console.log(teacher_id);
+        const result = await pool.query(`
+        with T AS 
+        (select t.teacher_id, count(cs.student_id) as mentored_students, avg(ctr.rating), sum(c.course_price/(select count(ct2.*) 
+        from courses c2 
+        join course_teacher ct2 on (c2.course_id=ct2.course_id) 
+        where c2.course_id = c.course_id))
+        from teachers t 
+          left join course_teacher ct on ct.teacher_id = t.teacher_id 
+          left join courses c on c.course_id = ct.course_id  
+          left join course_student cs on cs.course_id = c.course_id
+          left join course_teacher_rating ctr on ctr.teacher_id = t.teacher_id
+        where t.teacher_id = $1
+        group by t.teacher_id) 
+
+
+        select *
+        from teachers t2 join T using(teacher_id) join users U on (U.id = t2.user_id);
+              `, [teacher_id]);
+
+        res.json(result.rows);
+      } catch (err) {
+        res.status(500).json({ message: "Internal Error Occured" });
+      }
+    });
+
+    // *************************
+    //  * Total Revenue of my website in monthly basis 
+    //  *****************
+    //  */
+
+
+     app.get('/totalRevenue',async(req,res) => {
+      try{
+        const result = await pool.query(`
+          SELECT
+          TO_CHAR(months.month, 'Month') AS month,
+          COALESCE(SUM(c.course_price), 0) AS monthly_revenue
+          FROM
+          (
+              SELECT 
+                  DATE_TRUNC('month', NOW()) - INTERVAL '1 month' * (EXTRACT(MONTH FROM NOW()) - 1 + n) AS month
+              FROM 
+                  GENERATE_SERIES(1,12) AS n
+          ) AS months
+          LEFT JOIN
+          course_student cs ON to_char(cs.join_date,'month') = to_char(months.month,'month')
+          LEFT JOIN
+          courses c ON cs.course_id = c.course_id
+          GROUP BY
+          months.month
+          ORDER BY
+          months.month;
+        `);
+        res.json(result.rows);
+      }catch(err){
+        res.status(500).json({message : "Internal Errror Occured"});
+      }
+     })
+      /**************
+     * 
+     * endpoint for getting teachers, their reviews and ratings 
+     */
+      app.get('/teacher/allInfo', async (req, res) => {
+
+        try {
+          const teacher_id = req.params.teacher_id;
+          console.log(teacher_id);
+          const result = await pool.query(`
+          with T AS 
+          (select t.teacher_id, count(cs.student_id) as mentored_students, avg(ctr.rating), sum(c.course_price/(select count(ct2.*) 
+          from courses c2 
+          join course_teacher ct2 on (c2.course_id=ct2.course_id) 
+          where c2.course_id = c.course_id))
+          from teachers t 
+            left join course_teacher ct on ct.teacher_id = t.teacher_id 
+            left join courses c on c.course_id = ct.course_id  
+            left join course_student cs on cs.course_id = c.course_id
+            left join course_teacher_rating ctr on ctr.teacher_id = t.teacher_id
+          group by t.teacher_id) 
+  
+  
+          select *
+          from teachers t2 join T using(teacher_id) join users U on (U.id = t2.user_id);
+                `);
+  
+          res.json(result.rows);
+        } catch (err) {
+          res.status(500).json({ message: "Internal Error Occured" });
+        }
+      });
     /*************************
      *    Authentication
      *************************/
@@ -481,7 +648,7 @@ async function run() {
 
       try {
         const query =
-          "SELECT * FROM users WHERE username LIKE $1 AND id IN (SELECT user_id FROM teachers)";
+          "SELECT u.*, t.* FROM users u join teachers t ON u.id = t.user_id  WHERE username LIKE $1 AND id IN (SELECT user_id FROM teachers)";
         const result = await pool.query(query, [`%${username}%`]);
 
         // If users found, send the user data
@@ -567,6 +734,58 @@ async function run() {
       }
     });
 
+
+    app.patch('/teacher_reviews',async(req,res)=>{
+      try{
+        const {teacher_id, user_id, course_id, rating} = req.body;
+
+        const result1 = await pool.query(`select * from course_teacher_rating where teacher_id = $1 and student_id = (select student_id 
+          from students where user_id = $2) and course_id = $3`, [teacher_id, user_id,course_id]);
+        
+        if(result1.rows.length === 0){
+          const result = await pool.query(`INSERT INTO course_teacher_rating (teacher_id, student_id, course_id, rating) VALUES ($1, (select student_id from students where user_id = $2), $3,$4) RETURNING *`, [teacher_id, user_id,  course_id, rating]);
+          res.json(result.rows[0]);
+        }else{
+          const result = await pool.query(`UPDATE course_teacher_rating set rating = $1 where teacher_id = $2 and student_id = (
+            select student_id from students where user_id = $3
+          ) and course_id = $4 RETURNING *`, [rating, teacher_id, user_id,course_id]);
+          res.json(result.rows[0]);
+        }
+        
+      }catch(err){
+        console.error(err.message);
+      }
+    });
+
+
+    
+    //get reviews of the teacher
+    app.get('/teacher_reviews/:teacher_id',async(req,res)=>{
+      try{
+        const teacher_id = req.params.teacher_id; 
+        const result = await pool.query(`select Round(avg(rating),2) from course_teacher_rating where teacher_id = $1`, [teacher_id]);
+        res.json(result.rows); 
+
+      }catch(err){ 
+        console.log(err);
+      }
+
+    });
+
+     // Endpoint to call the delete_teacher stored procedure
+    app.delete('/teacher/:teacher_id', async (req, res) => {
+      const teacher_id = req.params.teacher_id;
+      console.log("delete called" , teacher_id);
+      try { 
+        // Call the stored procedure using the connection pool
+        await pool.query('CALL delete_teacher($1)', [teacher_id]);
+
+        res.status(200).json({ message: 'Teacher deleted successfully' });
+      } catch (error) {
+        console.error('Error calling delete_teacher stored procedure:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    });
     /*************************
      *  COLLABORATIONS
      *************************/
@@ -742,6 +961,7 @@ async function run() {
       try {
         const { title, lesson_description, teacher_id, course_id } = req.body;
         const { originalname, path } = req.file;
+    
         // Check if teacher_id and course_id exist in the database
         const teacherResult = await pool.query(
           "SELECT * FROM teachers WHERE teacher_id = $1",
@@ -751,16 +971,24 @@ async function run() {
           "SELECT * FROM courses WHERE course_id = $1",
           [course_id]
         );
-
+    
         if (teacherResult.rows.length === 0 || courseResult.rows.length === 0) {
           return res.status(404).json({ error: "Teacher or Course not found" });
         }
-
+    
+        // Call the function to calculate the new lesson_no
+        const { rows } = await pool.query('SELECT calculate_lesson_no($1) as lesson_no', [course_id]);
+        const lesson_no = rows[0].lesson_no;
+    
         const insertQuery = `
-      INSERT INTO lessons (course_id, teacher_id, title, lesson_description, lesson_pdf)
-      VALUES ($1, $2, $3, $4, $5)
-      RETURNING *;
-    `;
+          INSERT INTO lessons (course_id, teacher_id, title, lesson_description, lesson_pdf, lesson_no)
+          VALUES ($1, $2, $3, $4, $5, $6)
+          RETURNING *;
+        `;
+        
+        const cResult = await pool.query(
+          `update courses set ondelete = 'NO' where course_id = $1`, [course_id]
+        )
 
         const result = await pool.query(insertQuery, [
           course_id,
@@ -768,14 +996,54 @@ async function run() {
           title,
           lesson_description,
           path,
+          lesson_no
         ]);
-
+    
         res.status(201).json(result.rows[0]);
       } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal Server Error" });
       }
     });
+    
+    // app.post("/lessons", upload.single("file"), async (req, res) => {
+    //   try {
+    //     const { title, lesson_description, teacher_id, course_id } = req.body;
+    //     const { originalname, path } = req.file;
+    //     // Check if teacher_id and course_id exist in the database
+    //     const teacherResult = await pool.query(
+    //       "SELECT * FROM teachers WHERE teacher_id = $1",
+    //       [teacher_id]
+    //     );
+    //     const courseResult = await pool.query(
+    //       "SELECT * FROM courses WHERE course_id = $1",
+    //       [course_id]
+    //     );
+
+    //     if (teacherResult.rows.length === 0 || courseResult.rows.length === 0) {
+    //       return res.status(404).json({ error: "Teacher or Course not found" });
+    //     }
+
+    //     const insertQuery = `
+    //   INSERT INTO lessons (course_id, teacher_id, title, lesson_description, lesson_pdf)
+    //   VALUES ($1, $2, $3, $4, $5)
+    //   RETURNING *;
+    // `;
+
+    //     const result = await pool.query(insertQuery, [
+    //       course_id,
+    //       teacher_id,
+    //       title,
+    //       lesson_description,
+    //       path,
+    //     ]);
+
+    //     res.status(201).json(result.rows[0]);
+    //   } catch (error) {
+    //     console.error(error);
+    //     res.status(500).json({ error: "Internal Server Error" });
+    //   }
+    // });
 
 
     // get lessons for a course
@@ -821,7 +1089,49 @@ async function run() {
         res.status(500).json({ error: "Internal Server Error" });
       }
     });
+    //to get the teacher of this lesson
+    // app.get('/teacher/:lesson_id', async (req, res) => {
+    //   try {
+    //     const { lesson_id } = req.params;
+    //     console.log(lesson_id); 
+    //     const result = await pool.query(
+    //       `SELECT t.*,ct.*,u.*,(
+    //         select count(lecture_id) 
+    //         from lectures 
+    //         where lesson_id = $1
+    //       ) as total_lectures
+    //       FROM teachers t
+    //       JOIN course_teacher ct ON t.teacher_id = ct.teacher_id
+    //       JOIN users u ON t.user_id = u.id
+    //       JOIN lessons l ON ct.course_id = l.course_id
+    //       WHERE l.lesson_id = $1`, [lesson_id]
+    //     );
+    //     res.json(result.rows[0]);
+    //   } catch (err) {
+    //     console.log(err);
+    //   }
+    // });
 
+    app.get('/teacher/:lesson_id', async (req, res) => {
+      try {
+        const { lesson_id } = req.params;
+        console.log(lesson_id); 
+        const result = await pool.query(
+          `SELECT t.*,u.*,(
+            select count(lecture_id) 
+            from lectures 
+            where lesson_id = $1
+          ) as total_lectures
+          from lessons l join 
+          teachers t on t.teacher_id = l.teacher_id
+          join users u on u.id = t.user_id
+          WHERE l.lesson_id = $1`, [lesson_id]
+        );
+        res.json(result.rows[0]);
+      } catch (err) {
+        console.log(err);
+      }
+    });
 
     // delete a lesson from a course
     app.delete('/delete-lessons/:lesson_id', async (req, res) => {
@@ -1190,6 +1500,59 @@ async function run() {
       }
     });
 
+    // api to return true or false to check if a student is already enrolled in a course
+    app.get('/already-enrolled/:course_id/:student_id', async (req, res) => {
+      try{
+        const {course_id, student_id} = req.params;
+        const result = await pool.query(
+          `SELECT * FROM course_student WHERE course_id = $1 AND student_id = $2`, [course_id, student_id]
+        );
+        if(result.rows.length === 1){
+          res.json({enrolled: true});
+        }else{
+          res.json({enrolled: false});
+        }
+      }catch(err){
+        res.status(500).json({message : 'Internal Error Occured'});
+      }
+    });
+
+
+    // api to return true or false to check if a teacher is already teached in a course
+    app.get('/already-teached/:course_id/:teacher_id', async (req, res) => {
+      try{
+        const {course_id, teacher_id} = req.params;
+        const result = await pool.query( 
+          `SELECT * FROM course_teacher WHERE course_id = $1 AND teacher_id = $2`, [course_id, teacher_id]
+        );
+        if(result.rows.length === 1) {
+          res.json({teached : true}); 
+        } else{
+          res.json({teached : false}); 
+        }
+      }catch(err){
+        res.status(500).json({message : 'Internal Error Occured'});
+      }
+    });
+
+
+    app.delete("/courses-delete/:id", async (req, res) => {
+      try {
+        const { id } = req.params;
+        const deleteCourse = await pool.query(
+          `
+					  update courses set ondelete = 'YES', 
+						deletion_timestamp = CURRENT_TIMESTAMP
+						where course_id = $1
+					`,
+          [id]
+        );
+        res.json("Course was deleted!");
+      } catch (err) {
+        console.log(err.message);
+      }
+    });
+
 
     /*************************
      *    Course Rating
@@ -1246,7 +1609,6 @@ async function run() {
 
 
     //get algorithm courses for homepage 
-
     app.get('/homepage/algorithm', async (req, res) => {
       try {
         const result = await pool.query(
@@ -1274,8 +1636,8 @@ async function run() {
           `
           select * 
           from courses 
-          where category = 'Machine Learning' and course_status = 'APPROVED'; 
-          
+          where category = 'Machine Learning' and course_status = 'APPROVED'
+          limit 3
           `
         );
         res.json(result.rows);
@@ -1285,33 +1647,124 @@ async function run() {
       }
 
     });
+
+    app.get('/homepage/webdevelopment', async (req, res) => {
+      try {
+        const result = await pool.query(
+          `
+          SELECT
+              c.*,
+              COUNT(cs.student_id) AS total_students
+          FROM
+              courses c
+          JOIN
+              course_student cs ON c.course_id = cs.course_id
+          WHERE
+              (category = 'Web Development')
+              AND course_status = 'APPROVED'
+          GROUP BY
+              c.course_id
+          ORDER BY
+              total_students DESC
+              limit 3;
+      `)
+      res.json(result.rows);
+      } catch (err) {
+        console.log(err);
+      }
+    });
+
+
+    app.get('/homepage/teachers', async (req, res) => {
+      try {
+        console.log('in the homepage teachers section');
+        const result = await pool.query(`
+        
+        SELECT
+        t.teacher_id,
+        u.email,
+        u.username,
+        u.user_photo as image_url,
+        ROUND(AVG(ctr.rating), 2) AS ratings
+    FROM
+        teachers t
+    JOIN
+        course_teacher_rating ctr ON t.teacher_id = ctr.teacher_id
+    JOIN
+        users u ON u.id = t.user_id
+    GROUP BY
+        t.teacher_id,
+        u.email,
+        u.username,
+        u.user_photo
+    LIMIT 4;
+    
+
+        `);
+
+        res.json(result.rows);
+      } catch (err) {
+        res.status(500).json({ message: 'Internal server error' });
+      }
+    })
     /*************************
      *    QUIZ
      *************************/
-    app.post("/add-Questions", async(req,res) =>{
-      try{
-        console.log("hello")
-        const {questions, lesson_id, time, creator_id, course_id} = req.body;
-        console.log(questions, lesson_id, time, creator_id);
-        if(questions.length < 1) return;
+    // app.post("/add-Questions", async(req,res) =>{
+    //   try{
+    //     console.log("hello")
+    //     const {questions, lesson_id, time, creator_id, course_id} = req.body;
+    //     console.log(questions, lesson_id, time, creator_id);
+    //     if(questions.length < 1) return;
 
-        const query = `INSERT INTO quizzes (lesson_id, course_id, creator_id, time) VALUES ($1, $2, $3, $4) RETURNING *`;
-        const values = [lesson_id, course_id, creator_id, time];
-        const result = await pool.query(query, values);
-        const quiz_id = result.rows[0].quiz_id;
-        console.log(quiz_id);
-        await Promise.all(questions.map(async (question) => {
-          const query = `INSERT INTO questions (quiz_id, mark, option1, option2, option3, option4, correct_ans, question) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`;
-          const values = [quiz_id, question.mark, question.option1, question.option2, question.option3, question.option4, question.correct_ans, question.question];
-          await pool.query(query, values);
-      }));
-        // Send success response
-        res.status(200).json({ message: 'Questions inserted successfully' });  
-      }catch(error) {
-        console.error('Error inserting questions to database:', error);
-        res.status(500).json({ error: 'Internal server error' });
+    //     const query = `INSERT INTO quizzes (lesson_id, course_id, creator_id, time) VALUES ($1, $2, $3, $4) RETURNING *`;
+    //     const values = [lesson_id, course_id, creator_id, time];
+    //     const result = await pool.query(query, values);
+    //     const quiz_id = result.rows[0].quiz_id;
+    //     console.log(quiz_id);
+    //     await Promise.all(questions.map(async (question) => {
+    //       const query = `INSERT INTO questions (quiz_id, mark, option1, option2, option3, option4, correct_ans, question) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`;
+    //       const values = [quiz_id, question.mark, question.option1, question.option2, question.option3, question.option4, question.correct_ans, question.question];
+    //       await pool.query(query, values);
+    //   }));
+    //     // Send success response
+    //     res.status(200).json({ message: 'Questions inserted successfully' });  
+    //   }catch(error) {
+    //     console.error('Error inserting questions to database:', error);
+    //     res.status(500).json({ error: 'Internal server error' });
+    //   } 
+    // })
+    app.post("/add-Questions", async(req,res) =>{
+      try {
+          console.log("hello")
+          const {questions, lesson_id, time, creator_id, course_id} = req.body;
+          console.log(questions, lesson_id, time, creator_id);
+          if(questions.length < 1) return;
+  
+          // Call the stored procedure to get the new quiz_no
+          const { rows } = await pool.query('SELECT increment_quiz_no($1) as quiz_no', [course_id]);
+          const quiz_no = rows[0].quiz_no;
+  
+          const query = `INSERT INTO quizzes (lesson_id, course_id, creator_id, time, quiz_no) VALUES ($1, $2, $3, $4, $5) RETURNING quiz_id`;
+          const values = [lesson_id, course_id, creator_id, time, quiz_no];
+          const result = await pool.query(query, values);
+          const quiz_id = result.rows[0].quiz_id;
+          console.log(quiz_id);
+  
+          await Promise.all(questions.map(async (question) => {
+              const query = `INSERT INTO questions (quiz_id, mark, option1, option2, option3, option4, correct_ans, question) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`;
+              const values = [quiz_id, question.mark, question.option1, question.option2, question.option3, question.option4, question.correct_ans, question.question];
+              await pool.query(query, values);
+          }));
+  
+          // Send success response
+          res.status(200).json({ message: 'Questions inserted successfully' });  
+      } catch(error) {
+          console.error('Error inserting questions to database:', error);
+          res.status(500).json({ error: 'Internal server error' });
       } 
-    })
+  });
+  
     //get the questions and all related information related to a quiz
     app.get("/course/quiz/:course_id", async(req,res)=>{
       try{
@@ -1339,7 +1792,7 @@ async function run() {
           const quiz_id = req.params.quiz_id;
           const {answers, marks, student_id, course_id} = req.body;
           console.log(answers, marks, student_id)
-          const quizStudent = await pool.query(`INSERT INTO quiz_students (quiz_id, student_id, marks, course_id) VALUES ($1, $2, $3)`, [quiz_id, student_id, marks, course_id]);
+          const quizStudent = await pool.query(`INSERT INTO quiz_students (quiz_id, student_id, marks) VALUES ($1, $2, $3)`, [quiz_id, student_id, marks]);
 
           await Promise.all(answers.map(async (answer) => {
               const query = `INSERT INTO quiz_answers_student (quiz_id, student_id, question_id, answer) VALUES ($1, $2, $3, $4)`;
@@ -1355,6 +1808,71 @@ async function run() {
         }
     })
 
+
+    //get top 10 students of a particular course 
+     app.get('/getTopStudents/:course_id',async(req,res) => {
+      try{
+        const course_id = req.params.course_id;
+        const result = await pool.query(`
+        select users.*, 
+        (
+          select coalesce(sum(marks),0)
+          from quiz_students 
+          where student_id = 
+          (
+            select student_id 
+            from students 
+            where user_id = users.id 
+          ) and quiz_id IN(
+            select quiz_id 
+            from quizzes
+            where course_id = $1
+          )
+        ) total_marks
+        from users 
+        where users.role = 'student'
+        order by total_marks DESC
+        limit 10;
+        `,[course_id]); 
+
+        res.json(result.rows);
+      }catch(err){
+        res.status(500).json({message : "Internal Errror Occured"});
+      }
+     });
+  //   app.post("/quiz/:quiz_id", async(req, res) => {
+  //     console.log("inside quiz result post api")
+  //     try {
+  //         const quiz_id = req.params.quiz_id;
+  //         const { answers, marks, student_id, course_id } = req.body;
+          
+  //         // Call the stored procedure to get the new quiz_no
+  //         const rows  = await pool.query('SELECT increment_quiz_no($1) as quiz_no', [course_id]);
+  //         const quiz_no = rows[0].quiz_no;
+  //         console.log("quiz no " , quiz_no);
+  //         // Insert the new quiz with the determined quiz_no
+  //         const quizStudent = await pool.query(`
+  //             INSERT INTO quizzes (quiz_id, lesson_id, course_id, creator_id, quiz_no, time)
+  //             VALUES ($1, $2, $3, $4, $5, $6)`,
+  //             [quiz_id, lesson_id, course_id, creator_id, quiz_no, time]);
+          
+  //         // Insert quiz answers
+  //         await Promise.all(answers.map(async (answer) => {
+  //             const query = `
+  //                 INSERT INTO quiz_answers_student (quiz_id, student_id, question_id, answer)
+  //                 VALUES ($1, $2, $3, $4)`;
+  //             const values = [quiz_id, student_id, answer.question_id, answer.answer];
+  //             await pool.query(query, values);
+  //         }));
+  
+  //         // Send success response
+  //         res.status(200).json({ message: 'Answers inserted successfully' });  
+  //     } catch (error) {
+  //         console.error("Error fetching quizzes: ", error);
+  //         res.status(500).send("Error posting quiz results");
+  //     }
+  // });
+  
 
     //display results for a student
     app.get("/quiz/:course_id/:student_id", async(req,res)=>{
@@ -1373,10 +1891,10 @@ async function run() {
     app.get('/quizTaken/:quizId/:studentId', async (req, res) => {
         try {
             const { quizId, studentId } = req.params;
-    
+            console.log(quizId, studentId);
             // Query the quiz_students table to check if the student has taken the quiz
             const query = 'SELECT * FROM quiz_students WHERE quiz_id = $1 AND student_id = $2';
-            const { rows } = await pool.query(query, [quizId, studentId]);
+            const  {rows}  = await pool.query(query, [quizId, studentId]);
     
             // If the query returns any rows, it means the student has taken the quiz
             const hasTakenQuiz = rows.length > 0;
@@ -1492,12 +2010,64 @@ async function run() {
       }
     });
 
+
+    // delete a quiz 
+    app.delete('/quiz/:id/:course_id',async(req,res)=>{
+      try{
+        const quiz_id = req.params.id; 
+        const course_id = req.params.course_id;
+
+        await pool.query(
+          `call quiz_delete($1, $2)`,[quiz_id, course_id]
+        );
+
+        res.json('Quiz was deleted');
+      }catch(err){
+        res.status(500).json("Internal Error Occured");
+      }
+    });
+
     /*************************
      *    QUIZ STATS
      *************************/ 
-    // app.get("/quiz-marks/:student_id", async(req,res) =>{
-    //   const 
-    // })
+  
+app.get("/quiz-marks/:student_id/:course_id", async (req, res) => {
+  try {
+      console.log("inside quiz marks");
+      const { student_id, course_id } = req.params;
+
+      // Call the stored function to retrieve quiz marks
+      const { rows } = await pool.query('SELECT get_quiz_marks($1, $2) as quiz_marks', [student_id, course_id]);
+      
+      // Extract the JSONB result from the row
+      const quizMarks = rows[0].quiz_marks;
+
+      // Send the quiz marks JSONB response
+      res.status(200).json(quizMarks);
+  } catch (error) {
+      console.error("Error fetching quiz marks:", error);
+      res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/avg-quiz-marks/:course_id", async (req, res) => {
+  try {
+      const { course_id } = req.params;
+
+      // Call the stored function to get the average quiz marks
+      const { rows } = await pool.query('SELECT get_avg_quiz_marks($1) as avg_quiz_marks', [course_id]);
+      
+      // Extract the JSONB result from the row
+      const avgQuizMarks = rows[0].avg_quiz_marks;
+
+      // Send the average quiz marks JSONB response
+      res.status(200).json(avgQuizMarks);
+  } catch (error) {
+      console.error("Error fetching average quiz marks:", error);
+      res.status(500).json({ error: "Internal server error" });
+  }
+});
+
     /**-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-
      * COURSE FILES STORAGE AND UPLOAD
     =-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/

@@ -48,16 +48,16 @@ CREATE TABLE courses (
 );
 
 
-const types = ["Live", "Free", "Self-Paced", "Classroom"];
-  const options = ["Web Development", "DS & Algorithms", "Programming Languages", "Machine Learning","Interview & Placement", "Data Science"]
-course_status = APPROVED
+-- const types = ["Live", "Free", "Self-Paced", "Classroom"];
+--   const options = ["Web Development", "DS & Algorithms", "Programming Languages", "Machine Learning","Interview & Placement", "Data Science"]
+-- course_status = APPROVED
 
 CREATE TABLE course_student (
     course_id SERIAL REFERENCES courses(course_id),
     student_id INT REFERENCES students(student_id),
 	rating INT,
 	review TEXT,
-	join_date DATE,
+	join_date DATE AS DEFAULT CURRENT_DATE,
     PRIMARY KEY (course_id, student_id)
 );
 
@@ -125,6 +125,8 @@ CREATE TABLE quizzes (
     lesson_id INT REFERENCES lessons(lesson_id),
     course_id INT references courses(course_id),
     creator_id INT references teachers(teacher_id),
+    quiz_no INT,
+    status varchar(100) DEFAULT 'APPROVED',
     time INT 
 );
 
@@ -158,6 +160,13 @@ create table quiz_answers_student(
 	answer varchar(1000)
 )
 
+create table course_teacher_rating(
+   review_id SERIAL  PRIMARY KEY,  
+	 student_id INT REFERENCES students(student_id), 
+	 course_id INT REFERENCES courses(course_id),
+	 teacher_id INT REFERENCES teachers(teacher_id),
+	 rating INT 
+)
 
 --INSERT
 -- Inserting Computer Science Courses
@@ -361,3 +370,15 @@ INSERT INTO course_teacher (course_id, teacher_id, status) VALUES (74, 4, 'APPRO
 INSERT INTO courses (course_name, course_description, course_price, category, course_status, course_type, teacher_id)
 VALUES ('R Programming for Data Analysis', 'Learn R programming for data analysis.', 24.99, 'Data Science', 'APPROVED', 'Free', 5);
 INSERT INTO course_teacher (course_id, teacher_id, status) VALUES (75, 5, 'APPROVED');
+
+
+
+-- Index on category column
+CREATE INDEX idx_category ON courses (category);
+
+-- Index on course_type column
+CREATE INDEX idx_course_type ON courses (course_type);
+
+-- Index on course_name column
+CREATE INDEX idx_course_name ON courses (course_name);
+CREATE INDEX idx_username ON users (username);
